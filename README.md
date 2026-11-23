@@ -42,6 +42,8 @@ npm run lint
 | B / F8 | Debug: drop parcels / reset parcels |
 | \` | Debug panel |
 
+**Gamepad** (Xbox/PlayStation, standard mapping): left stick move/steer, right stick camera, RT/LT gas/brake, A jump/handbrake, X attack, Y interact (F), B crouch, LB/RB weapons, L3 sprint, R3 horn, D-pad up/down meter/tamper, D-pad right radio, Back phone, Start pause. Keyboard rebinding keeps the pad buttons.
+
 ## Debug panel (`)
 
 - **Stats**: fps, frame time, draw calls, triangles, physics bodies.
@@ -63,7 +65,7 @@ npm run lint
 src/
   core/        Engine (renderer, fixed 60 Hz loop), Physics (Rapier + interpolation),
                store (zustand vanilla), safeStorage, EventBus, graphics presets
-    input/     Action-based input, data-driven bindings, gamepad stub
+    input/     Action-based input, data-driven bindings, gamepad as pseudo key codes
                PostFX: bloom, warm split-tone grade, vignette, grain, Retro 2004 posterise
   world/       City (chunked generation + culling), DayNight (sky dome, sun, night uniforms), Potholes, Parcels
     city/      layout (grid, districts, road graph), district generators, roads/wires/flyover/stalls,

@@ -104,6 +104,7 @@ export class Engine {
 
   private frame = (now: number): void => {
     this.ctx.renderer.info.reset();
+    this.ctx.input.beginFrame();
     const realDt = Math.min((now - this.lastTime) / 1000, 0.25);
     this.lastTime = now;
     const { timeScale, paused, physicsWireframe } = store.getState().debug;

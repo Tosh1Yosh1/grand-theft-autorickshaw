@@ -6,15 +6,19 @@ import type { GraphicsPreset, Settings } from '../../core/store';
 import type { GameContext, GameSystem } from '../../core/System';
 
 const BIND_KEY = 'gtar.bindings.v1';
-const HIDDEN: Action[] = ['toggleDebug', 'debugSpawnBoxes', 'debugReset'];
+const HIDDEN: Action[] = ['toggleDebug', 'debugSpawnBoxes', 'debugReset', 'pause'];
 const LABELS: Partial<Record<Action, string>> = {
   moveForward: 'Aage', moveBack: 'Peeche', moveLeft: 'Left', moveRight: 'Right', jump: 'Jump / handbrake', sprint: 'Sprint',
   crouch: 'Crouch', interact: 'Interact (F)', horn: 'Horn', meter: 'Meter', tamperMeter: 'Tamper meter', attack: 'Attack',
-  weaponNext: 'Next weapon', weaponPrev: 'Prev weapon', skip: 'Skip dialogue', phone: 'Phone', radio: 'Radio station',
+  weaponNext: 'Next weapon', weaponPrev: 'Prev weapon', skip: 'Skip dialogue', phone: 'Phone', radio: 'Radio station', pause: 'Pause (pad)',
 };
 
 export function loadBindings(): Bindings {
-  return { ...DEFAULT_BINDINGS, ...safeStorage.get<Partial<Bindings>>(BIND_KEY, {}) };
+  const saved = safeStorage.get<Partial<Bindings>>(BIND_KEY, {});
+  // Rebinding is keyboard/mouse only: always keep the default pad buttons on every action.
+  const out = { ...DEFAULT_BINDINGS };
+  for (const a of ACTIONS) if (saved[a]) out[a] = [...saved[a]!.filter((c) => !c.startsWith('Pad')), ...DEFAULT_BINDINGS[a].filter((c) => c.startsWith('Pad'))];
+  return out;
 }
 
 /**
@@ -70,13 +74,18 @@ export class PauseMenu implements GameSystem {
     if (on) this.render();
   }
 
+  update(): void {
+    // Gamepad Start: Esc can't be read under pointer lock, but pad buttons can.
+    if (this.ctx.input.wasPressed('pause') && this.ctx.services.camera?.enabled !== false) this.show(!this.open);
+  }
+
   openTab(tab: 'main' | 'settings' | 'controls'): void {
     this.tab = tab;
     this.render();
   }
 
   private bind(action: Action, code: string): void {
-    this.bindings = { ...this.bindings, [action]: [code] };
+    this.bindings = { ...this.bindings, [action]: [code, ...DEFAULT_BINDINGS[action].filter((c) => c.startsWith('Pad'))] };
     safeStorage.set(BIND_KEY, this.bindings);
     this.ctx.input.setBindings(this.bindings);
     this.rebinding = null;

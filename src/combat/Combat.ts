@@ -105,7 +105,7 @@ export class Combat implements GameSystem {
     this.punchAnim = Math.max(0, this.punchAnim - dt * 4);
     player.animator.punch = Math.min(1, this.punchAnim * 2);
     const weapon = WEAPONS[store.getState().player.weapon];
-    if (!input.pointerLocked) return; // first click just grabs the mouse
+    if (!input.pointerLocked && !input.gamepad.active) return; // first click just grabs the mouse
 
     if (weapon.id === 'fists') {
       // Tap = punch. Hold 0.5 s and release = TIGHT SLAP in Bollywood slow motion.

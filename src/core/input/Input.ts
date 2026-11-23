@@ -11,7 +11,7 @@ export class Input {
   private pressed = new Set<Action>();
   private released = new Set<Action>();
   private codeToActions = new Map<string, Action[]>();
-  private readonly gamepad = new GamepadSource();
+  readonly gamepad = new GamepadSource();
 
   /** Mouse movement since last frame, in pixels. Only accumulates while pointer is locked. */
   readonly mouseDelta = { x: 0, y: 0 };
@@ -66,8 +66,19 @@ export class Input {
     return [...this.down];
   }
 
+  /** Call at the start of every frame, before systems read input. */
+  beginFrame(): void {
+    this.gamepad.poll(
+      (c) => this.press(c),
+      (c) => this.release(c),
+      (dx, dy) => {
+        this.mouseDelta.x += dx;
+        this.mouseDelta.y += dy;
+      },
+    );
+  }
+
   endFrame(): void {
-    this.gamepad.poll();
     this.pressed.clear();
     this.released.clear();
     this.mouseDelta.x = 0;
