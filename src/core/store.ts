@@ -16,9 +16,14 @@ export interface Settings {
   retro: boolean;
 }
 
+export type WeaponId = 'fists' | 'chappal' | 'bat' | 'slingshot' | 'belan';
+
 export interface PlayerState {
   money: number; // rupees
-  health: number; // 0-100, shown as chai cups later
+  health: number; // 0-100, shown as chai cups
+  wanted: number; // 0-5 chappals
+  weapons: WeaponId[];
+  weapon: WeaponId;
 }
 
 export interface DebugState {
@@ -53,7 +58,7 @@ export const DEFAULT_SETTINGS: Settings = {
 
 export const store = createStore<GameState>()((set) => ({
   settings: { ...DEFAULT_SETTINGS, ...safeStorage.get<Partial<Settings>>(SETTINGS_KEY, {}) },
-  player: { money: 420, health: 100 },
+  player: { money: 4200, health: 100, wanted: 0, weapons: ['fists', 'chappal'], weapon: 'fists' },
   debug: { visible: false, timeScale: 1, paused: false, physicsWireframe: false },
   setSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
   setPlayer: (patch) => set((s) => ({ player: { ...s.player, ...patch } })),

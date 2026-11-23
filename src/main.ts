@@ -3,11 +3,17 @@ import { Animals } from './ai/animals/Animals';
 import { StreetEvents } from './ai/events/StreetEvents';
 import { Pedestrians } from './ai/peds/Pedestrians';
 import { Traffic } from './ai/traffic/Traffic';
+import { Combat } from './combat/Combat';
 import { WEBGL_MISSING } from './content/errors';
 import { Engine } from './core/Engine';
 import { PostFX } from './core/PostFX';
 import type { GameSystem } from './core/System';
 import { Player } from './player/Player';
+import { PlayerHealth } from './player/PlayerHealth';
+import { Police } from './wanted/Police';
+import { Wanted } from './wanted/Wanted';
+import { updateHud } from './ui/hud';
+import { DISTRICT_INFO } from './content/hoardings';
 import { ThirdPersonCamera } from './player/ThirdPersonCamera';
 import { DebugGui } from './ui/DebugGui';
 import { createActionReadout, showError, showHint, showLoading } from './ui/overlay';
@@ -57,13 +63,30 @@ async function boot(): Promise<void> {
   await engine.add(new Traffic());
   await engine.add(new Animals());
   await engine.add(new StreetEvents());
+  const combat = new Combat();
+  await engine.add(combat);
+  await engine.add(new Wanted());
+  await engine.add(new Police());
+  await engine.add(new PlayerHealth());
+  // Weapon pickups near home to get started.
+  combat.addPickup('bat', new THREE.Vector3(SPAWN.x + 8, 0, SPAWN.z + 0.5));
+  combat.addPickup('slingshot', new THREE.Vector3(SPAWN.x - 10, 0, SPAWN.z + 0.5));
   const sh = city.landmarks.safehouse;
   await engine.add(new Parcels(new THREE.Vector3(sh.x + 6, 0, sh.z + 1)));
 
   const readout = createActionReadout();
+  const services = engine.ctx.services;
   const actionReadout: GameSystem = {
-    name: 'actionReadout',
-    update: () => readout(engine.ctx.input.activeActions()),
+    name: 'hud',
+    priority: 110,
+    update: () => {
+      readout(engine.ctx.input.activeActions());
+      updateHud({
+        seen: services.wanted?.seen ?? false,
+        clock: services.dayNight?.clockText ?? '',
+        district: DISTRICT_INFO[services.city?.currentDistrict ?? 'jugaadpur']?.name ?? '',
+      });
+    },
   };
   await engine.add(actionReadout);
 

@@ -217,6 +217,44 @@ class AudioManagerImpl {
     src.stop(t + 0.35);
   }
 
+  /**
+   * Police "ringtone siren": a cheesy original arpeggio instead of a wail.
+   * Returns a handle; set(volume 0..1) every frame, stop() when done.
+   */
+  siren(): { set(volume: number): void; stop(): void } {
+    const ctx = this.ctx;
+    if (!ctx) return { set() {}, stop() {} };
+    const o = ctx.createOscillator();
+    o.type = 'square';
+    const g = ctx.createGain();
+    g.gain.value = 0;
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 2400;
+    o.connect(lp).connect(g).connect(this.sfx);
+    o.start();
+    const notes = [659, 784, 988, 784, 659, 523, 659, 784];
+    let i = 0;
+    const timer = setInterval(() => {
+      o.frequency.setValueAtTime(notes[i++ % notes.length]!, ctx.currentTime);
+    }, 125);
+    return {
+      set(volume) {
+        g.gain.setTargetAtTime(volume * 0.12, ctx.currentTime, 0.1);
+      },
+      stop() {
+        clearInterval(timer);
+        g.gain.setTargetAtTime(0, ctx.currentTime, 0.05);
+        o.stop(ctx.currentTime + 0.3);
+      },
+    };
+  }
+
+  /** Old-school phone ring (Mummy is calling). */
+  ring(): void {
+    for (let k = 0; k < 2; k++) for (let j = 0; j < 6; j++) setTimeout(() => this.beep(j % 2 ? 1100 : 1300, 0.05, 0.12), k * 700 + j * 60);
+  }
+
   /** Short beep for UI, meter clicks, phone. */
   beep(freq = 880, duration = 0.08, volume = 0.15): void {
     const ctx = this.ctx;

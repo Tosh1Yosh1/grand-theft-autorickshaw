@@ -24,6 +24,8 @@ export class Vehicle {
   steer = 0;
   /** Set by the manager when the player drives it. AI traffic leaves it false. */
   playerDriven = false;
+  /** AI driver (police, missions). Called every physics step when the player isn't driving. */
+  ai: ((dt: number) => DriveInput) | null = null;
   /** Seconds spent upside down, for auto-righting. */
   private flippedTime = 0;
   private readonly tmpQ = new THREE.Quaternion();

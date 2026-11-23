@@ -63,6 +63,7 @@ export class Engine {
       events: new EventBus(),
       store,
       services: {},
+      clock: { scale: 1 },
     };
 
     const st = store.getState().settings;
@@ -106,7 +107,7 @@ export class Engine {
     const realDt = Math.min((now - this.lastTime) / 1000, 0.25);
     this.lastTime = now;
     const { timeScale, paused, physicsWireframe } = store.getState().debug;
-    const dt = paused ? 0 : realDt * timeScale;
+    const dt = paused ? 0 : realDt * timeScale * this.ctx.clock.scale;
 
     this.accumulator += dt;
     let steps = 0;

@@ -2,6 +2,9 @@ import type { Pedestrians } from '../ai/peds/Pedestrians';
 import type { Traffic } from '../ai/traffic/Traffic';
 import type { Animals } from '../ai/animals/Animals';
 import type { StreetEvents } from '../ai/events/StreetEvents';
+import type { Combat } from '../combat/Combat';
+import type { Wanted } from '../wanted/Wanted';
+import type { Police } from '../wanted/Police';
 import type { Player } from '../player/Player';
 import type { ThirdPersonCamera } from '../player/ThirdPersonCamera';
 import type { VehicleManager } from '../vehicles/VehicleManager';
@@ -24,4 +27,7 @@ export interface Services {
   traffic?: Traffic;
   animals?: Animals;
   events?: StreetEvents;
+  combat?: Combat;
+  wanted?: Wanted;
+  police?: Police;
 }

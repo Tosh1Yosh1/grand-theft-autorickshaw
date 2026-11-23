@@ -7,6 +7,7 @@ export const HUMANOID_PARTS: PartDef[] = [
   { name: 'belly', geo: SPHERE, color: 'shirt', pivot: [0, 1.0, 0], offset: [0, 0.12, 0.08], scale: [0.4, 0.42, 0.32], joint: 'spine', optional: true },
   { name: 'head', geo: SPHERE, color: 'skin', pivot: [0, 1.55, 0], offset: [0, 0.14, 0], scale: [0.26, 0.3, 0.27], joint: 'head' },
   { name: 'hair', geo: SPHERE, color: 'hair', pivot: [0, 1.55, 0], offset: [0, 0.22, -0.02], scale: [0.28, 0.18, 0.29], joint: 'head' },
+  { name: 'cap', geo: BOX, color: 'cap', pivot: [0, 1.55, 0], offset: [0, 0.3, 0.02], scale: [0.3, 0.1, 0.32], joint: 'head', optional: true },
   { name: 'bun', geo: SPHERE, color: 'hair', pivot: [0, 1.55, 0], offset: [0, 0.2, -0.16], scale: [0.14, 0.14, 0.14], joint: 'head', optional: true },
   { name: 'glasses', geo: BOX, color: 'dark', pivot: [0, 1.55, 0], offset: [0, 0.16, 0.13], scale: [0.22, 0.05, 0.03], joint: 'head', optional: true, castShadow: false },
   { name: 'legL', geo: CAPSULE, color: 'pants', pivot: [0.1, 0.95, 0], offset: [0, -0.46, 0], scale: [0.15, 0.48, 0.15], joint: 'legL' },
@@ -22,7 +23,7 @@ export const HUMANOID_PARTS: PartDef[] = [
   { name: 'bat', geo: BOX, color: 'pack', pivot: [-0.27, 1.45, 0], offset: [0, -0.75, 0.25], scale: [0.08, 0.7, 0.04], joint: 'armR', optional: true },
 ];
 
-export type PedType = 'aunty' | 'uncle' | 'startupBro' | 'gymBhai' | 'deliveryBoy' | 'selfieCouple' | 'commuter' | 'kid' | 'dancer' | 'supporter';
+export type PedType = 'aunty' | 'uncle' | 'startupBro' | 'gymBhai' | 'deliveryBoy' | 'selfieCouple' | 'commuter' | 'kid' | 'dancer' | 'supporter' | 'cop' | 'squad' | 'anchor';
 
 export interface PedStyle {
   colors: Record<string, string>;
@@ -38,7 +39,7 @@ const HAIR = ['#120c08', '#1f1510', '#2b1d14', '#6b6b6b'];
 
 export function styleFor(type: PedType): PedStyle {
   const skin = r(SKIN);
-  const base = { skin, arms: skin, hair: r(HAIR), dark: '#111111', pack: '#333333', saree: '#e63946' };
+  const base = { skin, arms: skin, hair: r(HAIR), dark: '#111111', pack: '#333333', saree: '#e63946', cap: '#111111' };
   switch (type) {
     case 'aunty':
       return { colors: { ...base, shirt: r(['#e63946', '#ff7f50', '#9b5de5', '#f15bb5', '#00bbf9']), pants: '#7a1f3d', saree: r(['#e63946', '#ff006e', '#fb5607', '#8338ec', '#06d6a0', '#ffbe0b']), hair: '#120c08' }, show: new Set(['saree', 'bun', 'belly']), scale: 0.95, speed: 1.0 };
@@ -56,6 +57,12 @@ export function styleFor(type: PedType): PedStyle {
       return { colors: { ...base, shirt: r(['#ffffff', '#ffbe0b', '#3a86ff', '#8ac926']), pants: r(['#023047', '#6c757d']), pack: '#c9a227' }, show: new Set(['bat']), scale: 0.62, speed: 1.6 };
     case 'dancer':
       return { colors: { ...base, shirt: r(['#ffd60a', '#ff006e', '#8338ec', '#f72585', '#ffffff']), pants: r(['#f1faee', '#ffd60a', '#e63946']), saree: r(['#ff006e', '#ffbe0b', '#e63946']) }, show: new Set(Math.random() < 0.4 ? ['saree', 'bun'] : []), scale: 1, speed: 0.6 };
+    case 'cop':
+      return { colors: { ...base, shirt: '#b49a5e', arms: '#b49a5e', pants: '#a88f55', cap: '#a88f55', pack: '#6b4423' }, show: new Set(['cap', 'bat', 'belly']), scale: 1, speed: 1.5 };
+    case 'squad':
+      return { colors: { ...base, shirt: '#2b2d42', arms: '#2b2d42', pants: '#2b2d42', cap: '#111111', pack: '#111111', dark: '#111111' }, show: new Set(['cap', 'bat', 'glasses']), scale: 1.05, speed: 1.9 };
+    case 'anchor':
+      return { colors: { ...base, shirt: '#d00000', arms: '#d00000', pants: '#111111', dark: '#111111' }, show: new Set(['phone', 'glasses']), scale: 1, speed: 1.2 };
     case 'supporter':
       return { colors: { ...base, shirt: '#ffffff', pants: '#f4f1e8', arms: '#ffffff', pack: '#5a3d2b', saree: r(['#ff6d00', '#2a9d8f', '#3a86ff', '#e63946']) }, show: new Set(['flag', 'flagCloth']), scale: 1, speed: 0.8 };
     default:
@@ -63,7 +70,7 @@ export function styleFor(type: PedType): PedStyle {
   }
 }
 
-export type Anim = 'walk' | 'run' | 'idle' | 'selfie' | 'dance' | 'lying' | 'sitting' | 'wave' | 'bat' | 'chant';
+export type Anim = 'walk' | 'run' | 'idle' | 'selfie' | 'dance' | 'lying' | 'sitting' | 'wave' | 'bat' | 'chant' | 'swing';
 
 /** Procedural pose for an NPC. t = seconds, phase = per-ped offset. */
 export function humanoidPose(anim: Anim, t: number, phase: number, speed: number, out: Pose): Pose {
@@ -108,6 +115,13 @@ export function humanoidPose(anim: Anim, t: number, phase: number, speed: number
     case 'bat':
       z('armR', -1.2 + Math.sin(t * 2 + phase) * 0.6, 0.5, -0.4); z('armL', -1.2, 0, 0.3); z('spine', 0.2, -0.4, 0);
       break;
+    case 'swing': {
+      const k = (Math.sin(t * 9 + phase) + 1) / 2;
+      const a = speed > 1.6 ? 0.9 : 0.5;
+      z('legL', s * a); z('legR', -s * a);
+      z('armR', -2.6 + k * 2.4, 0, -0.2); z('armL', -s * a * 0.6, 0, 0.1);
+      break;
+    }
     case 'sitting':
       z('legL', -1.5); z('legR', -1.5); z('armL', -0.4, 0, 0.3); z('armR', -0.4, 0, -0.3); z('spine', -0.1);
       break;

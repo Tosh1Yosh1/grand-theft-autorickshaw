@@ -106,7 +106,9 @@ export class ThirdPersonCamera implements GameSystem {
     // Pull in if a wall is between pivot and camera.
     let want = this.target.distance;
     const ray = new physics.rapier.Ray(this.smoothPivot, this.dir);
-    const hit = physics.world.castRay(ray, want, true, undefined, undefined, undefined, this.target.excludeBody);
+    // Only static world geometry pulls the camera in (not parcels, cars or people).
+    const flags = physics.rapier.QueryFilterFlags.EXCLUDE_DYNAMIC | physics.rapier.QueryFilterFlags.EXCLUDE_KINEMATIC;
+    const hit = physics.world.castRay(ray, want, true, flags, undefined, undefined, this.target.excludeBody);
     if (hit) want = Math.max(0.6, hit.timeOfImpact - 0.25);
     // Snap in fast, ease out slowly.
     const rate = want < this.currentDistance ? 30 : 4;

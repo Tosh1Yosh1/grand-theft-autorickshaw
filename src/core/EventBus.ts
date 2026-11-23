@@ -14,6 +14,13 @@ export interface GameEvents {
   'event:start': { kind: string; position: import('three').Vector3 };
   'event:end': { kind: string };
   'vehicle:windshield': { by: string };
+  'crime:assault': { position: import('three').Vector3; cop: boolean };
+  'combat:projectile': { position: import('three').Vector3 };
+  'player:damage': { amount: number; source: string };
+  'player:wasted': void;
+  'player:busted': { fine: number };
+  'wanted:change': { level: number };
+  'phone:call': { from: string };
 }
 
 type Handler<T> = (payload: T) => void;

@@ -79,6 +79,8 @@ export class VehicleManager implements GameSystem {
           handbrake: input.isDown('jump'),
         });
         this.meter.tick(Math.abs(v.speed) * dt);
+      } else if (v.ai) {
+        v.fixedUpdate(dt, v.ai(dt));
       } else if (!v.playerDriven) {
         // Parked / AI-less vehicles just sit there with the handbrake on. AI traffic overrides this later.
         v.fixedUpdate(dt, IDLE_INPUT);
@@ -95,7 +97,7 @@ export class VehicleManager implements GameSystem {
 
     if (this.current) {
       const v = this.current;
-      if (input.wasPressed('interact')) {
+      if (input.wasPressed('interact') && !services.wanted?.dealAvailable) {
         if (Math.abs(v.speed) > 3) this.say(EXIT_MOVING_LINES);
         else this.exit();
       }
@@ -138,12 +140,17 @@ export class VehicleManager implements GameSystem {
       const d = v.position.distanceTo(player.position);
       if (d < best) { best = d; nearest = v; }
     }
+    if (services.wanted?.dealAvailable) return;
     setPrompt(nearest ? `<kbd>F</kbd> ${nearest.config.hasMeter ? 'Auto chalao' : `Drive ${nearest.config.name}`}` : null);
     if (nearest && input.wasPressed('interact')) this.enter(nearest);
   }
 
   enter(v: Vehicle): void {
     const { services } = this.ctx;
+    if (v.ai) {
+      v.ai = null;
+      services.wanted?.raise(Math.max(services.wanted.level, 2)); // stealing a cop car: bold
+    }
     const player = services.player!;
     player.setActive(false);
     const rig = player.rig.root;

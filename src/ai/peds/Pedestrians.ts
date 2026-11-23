@@ -335,7 +335,12 @@ export class Pedestrians implements GameSystem {
       if (p.state !== 'airborne' && p.state !== 'scripted') p.pos.y += (this.groundY(p.pos) - p.pos.y) * 0.3;
       if (p.state === 'airborne') p.heading += p.spin * dt;
 
-      if (p.state === 'scripted' || p.state === 'airborne' || p.state === 'downed') continue;
+      if (p.state === 'airborne' || p.state === 'downed') continue;
+      if (p.state === 'scripted') {
+        // Cops and event crowds can still be run over; seated drivers/riders can't.
+        if (driving && p.anim !== 'sitting') this.checkVehicle(p, driving.position, driving.speed, driving.heading, true);
+        continue;
+      }
 
       // Pappu on foot shoves through crowds; peds sidestep.
       if (player?.active) {

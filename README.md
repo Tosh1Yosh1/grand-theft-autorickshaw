@@ -28,7 +28,9 @@ npm run lint
 | Shift | Sprint |
 | Space | Jump (hold for higher) |
 | C | Crouch |
-| F | Get in / out of a vehicle |
+| F | Get in / out of a vehicle · bribe a hawaldar · respray · pay off Netaji |
+| Left mouse | Attack (fists: hold 0.5 s + release = slow-mo TIGHT SLAP) |
+| Q / E | Previous / next weapon (fists, boomerang chappal, bat, gulel, Mummy ki belan) |
 | W / S (in vehicle) | Gas / brake, then reverse |
 | A / D (in vehicle) | Steer |
 | Space (in vehicle) | Handbrake (drift) |
@@ -73,7 +75,10 @@ src/
                baked per material), peds/ (6 pedestrian types, sidewalks, jaywalking, knockdowns, mobs),
                traffic/ (left-hand lanes on the road graph, honking, wrong-way, overtakes, wrecks),
                animals/ (cows, street dogs), events/ (baraat, gully cricket, monsoon, digging, rally, rain)
-  combat/ wanted/ missions/ assets/   (filled in later phases)
+  combat/      Weapons, melee cones, boomerang chappal + gulel projectiles, slow-mo slap, pickups
+  wanted/      Challan system (0-5 chappals, cooling, hiding, bribes/respray/neta) and Police dispatcher
+               (hawaldars, bike pair, jeeps, squad, news van, roadblocks, drone, ringtone siren)
+  missions/ assets/   (filled in later phases)
 ```
 
 ### Conventions
@@ -82,6 +87,19 @@ src/
 - Game code reads **actions** (`input.isDown('jump')`), never raw keys. Bindings live in `src/core/input/bindings.ts`.
 - Any line that may swear is a `{ dirty, clean }` pair, resolved with `pickLine()` / `resolveLine()` from `src/content/lines.ts`.
 - Assets: CC0 only. Log every third-party asset in `ASSETS_CREDITS.md`; missing ones go in `TODO_ASSETS.md`.
+
+## Challan (wanted) levels
+
+| Chappals | Who shows up | Make it go away |
+| --- | --- | --- |
+| 1 | Hawaldar on foot | Bribe ₹200 (F next to him) |
+| 2 | + two cops on a bike | Bribe ₹600 |
+| 3 | + jeep with ringtone siren | Bribe ₹2,500 |
+| 4 | + Special Squad, Cheekh TV news van | Denting-Painting respray ₹2,000 |
+| 5 | + roadblocks, drone, Mummy calls | Netaji: ₹5,000 per chappal |
+
+Heat also cools when no cop sees you; hiding in a baraat or a traffic jam cools it much faster.
+Hitting a cow is an instant 3 chappals and an angry mob.
 
 ## Mumbhai map
 

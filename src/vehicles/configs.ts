@@ -1,5 +1,6 @@
 import { buildAutoRickshaw } from './models/autoRickshaw';
 import { buildBike, buildBullockCart, buildBus, buildInnova, buildMaruti, buildTaxi, buildTempo, buildThar } from './models/cars';
+import { buildNewsVan, buildPoliceBike, buildPoliceJeep } from './models/police';
 import type { VehicleConfig } from './types';
 
 const SUSP = { restLength: 0.32, stiffness: 30, compression: 2.3, relaxation: 2.6, travel: 0.25 };
@@ -195,6 +196,10 @@ export const BULLOCK_CART: VehicleConfig = {
   buildModel: buildBullockCart,
 };
 
+export const POLICE_JEEP: VehicleConfig = { ...THAR, id: 'policeJeep', name: 'Poleece Jeep', engineForce: 6800, maxSpeed: 27, buildModel: buildPoliceJeep };
+export const POLICE_BIKE: VehicleConfig = { ...BIKE, id: 'policeBike', name: 'Poleece Bike', maxSpeed: 23, buildModel: buildPoliceBike };
+export const NEWS_VAN: VehicleConfig = { ...TEMPO, id: 'newsVan', name: 'Cheekh TV Van', engineForce: 7000, maxSpeed: 24, buildModel: buildNewsVan };
+
 export const VEHICLES: Record<string, VehicleConfig> = {
   auto: AUTO_RICKSHAW,
   maruti: MARUTI,
@@ -205,4 +210,7 @@ export const VEHICLES: Record<string, VehicleConfig> = {
   bus: BUS,
   bike: BIKE,
   cart: BULLOCK_CART,
+  policeJeep: POLICE_JEEP,
+  policeBike: POLICE_BIKE,
+  newsVan: NEWS_VAN,
 };

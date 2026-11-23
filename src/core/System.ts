@@ -15,6 +15,8 @@ export interface GameContext {
   events: EventBus;
   store: typeof store;
   services: Services;
+  /** Gameplay time scale (slow-mo slaps, cutscenes). Multiplies with the debug time scale. */
+  clock: { scale: number };
 }
 
 /**
