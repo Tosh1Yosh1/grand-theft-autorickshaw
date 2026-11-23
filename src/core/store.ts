@@ -10,6 +10,7 @@ export interface Settings {
   invertY: boolean;
   masterVolume: number;
   hornVolume: number;
+  radioVolume: number;
   subtitles: boolean;
 }
 
@@ -43,6 +44,7 @@ export const DEFAULT_SETTINGS: Settings = {
   invertY: false,
   masterVolume: 0.8,
   hornVolume: 0.8,
+  radioVolume: 0.6,
   subtitles: true,
 };
 

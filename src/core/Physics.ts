@@ -20,9 +20,18 @@ export class Physics {
   alpha = 1;
   private debugLines: THREE.LineSegments | null = null;
 
+  private readonly events: RAPIER.EventQueue;
+  private forceHandlers: ((a: RAPIER.Collider, b: RAPIER.Collider, force: number) => void)[] = [];
+
   private constructor(readonly rapier: typeof RAPIER) {
     this.world = new rapier.World({ x: 0, y: -9.81, z: 0 });
     this.world.timestep = FIXED_DT;
+    this.events = new rapier.EventQueue(true);
+  }
+
+  /** Big impacts on colliders that enabled CONTACT_FORCE_EVENTS (vehicles, mostly). */
+  onContactForce(handler: (a: RAPIER.Collider, b: RAPIER.Collider, force: number) => void): void {
+    this.forceHandlers.push(handler);
   }
 
   static async create(): Promise<Physics> {
@@ -54,7 +63,14 @@ export class Physics {
       s.prevPos.copy(s.currPos);
       s.prevRot.copy(s.currRot);
     }
-    this.world.step();
+    this.world.step(this.events);
+    if (this.forceHandlers.length) {
+      this.events.drainContactForceEvents((e) => {
+        const a = this.world.getCollider(e.collider1());
+        const b = this.world.getCollider(e.collider2());
+        if (a && b) for (const h of this.forceHandlers) h(a, b, e.totalForceMagnitude());
+      });
+    } else this.events.clear();
     for (const s of this.synced) {
       const t = s.body.translation();
       const r = s.body.rotation();

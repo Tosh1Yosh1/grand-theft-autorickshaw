@@ -38,3 +38,23 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #1a0f05; fon
 .hint kbd { background: var(--paper); color: var(--ink); border-radius: 4px; padding: 0 5px; font-family: monospace; }
 .actions { position: absolute; right: 16px; bottom: 16px; font: 12px monospace; background: rgba(30,15,5,0.65);
   padding: 6px 10px; border-radius: 8px; }
+
+.subtitle-line { position: absolute; left: 50%; bottom: 90px; transform: translateX(-50%); max-width: min(80vw, 760px);
+  text-align: center; font-size: clamp(15px, 2.2vw, 20px); background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 6px;
+  opacity: 0; transition: opacity 0.2s; text-shadow: 1px 1px 0 #000; }
+.subtitle-line.show { opacity: 1; }
+.subtitle-line b { color: var(--saffron); }
+.prompt { position: absolute; left: 50%; top: 62%; transform: translateX(-50%); display: none; font-size: 16px;
+  background: rgba(30,15,5,0.75); padding: 6px 14px; border-radius: 999px; border: 2px solid var(--saffron); }
+.prompt kbd { background: var(--saffron); color: var(--ink); border-radius: 4px; padding: 0 6px; font-weight: 700; }
+
+.vehicle-hud { position: absolute; right: 16px; bottom: 56px; min-width: 170px; display: none; text-align: right;
+  background: rgba(30,15,5,0.65); padding: 8px 12px; border-radius: 10px; }
+.vh-name { font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+.vh-speed { font-size: 34px; font-weight: 900; color: var(--saffron); line-height: 1; }
+.vh-speed span { font-size: 14px; color: var(--paper); }
+.vh-bar { height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; margin: 6px 0 4px; overflow: hidden; }
+.vh-bar div { height: 100%; transition: width 0.2s; }
+.vh-meter { font: bold 13px monospace; color: #ff5b4f; background: #111; padding: 3px 6px; border-radius: 4px; display: inline-block; }
+.vh-meter.tampered { animation: blink 0.6s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0.4; } }

@@ -27,6 +27,9 @@ export class TestLevel implements GameSystem {
     this.ctx = ctx;
     this.buildGround();
     this.buildPlayground();
+    // A pothole slalom on the "road" south of spawn.
+    const holes = ctx.services.potholes;
+    if (holes) for (let i = 0; i < 14; i++) holes.add(-2 + Math.sin(i * 1.7) * 3, -20 - i * 6, 0.6 + (i % 3) * 0.25);
     this.spawnBoxes(40);
     ctx.events.on('debug:spawnBoxes', ({ count }) => this.spawnBoxes(count));
     ctx.events.on('debug:resetLevel', () => this.reset());

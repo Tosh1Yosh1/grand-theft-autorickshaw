@@ -2,6 +2,9 @@
 export interface GameEvents {
   'debug:spawnBoxes': { count: number };
   'debug:resetLevel': void;
+  'vehicle:enter': { id: string };
+  'vehicle:exit': { id: string };
+  'vehicle:pothole': { damage: number };
 }
 
 type Handler<T> = (payload: T) => void;

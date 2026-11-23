@@ -40,6 +40,7 @@ export class ThirdPersonCamera implements GameSystem {
   private currentDistance = 4;
   private idleTime = 0;
   private snapNext = true;
+  private shakeAmount = 0;
 
   init(ctx: GameContext): void {
     this.ctx = ctx;
@@ -50,6 +51,11 @@ export class ThirdPersonCamera implements GameSystem {
     f.add(this.tuning, 'sprintFovBoost', 0, 25, 1);
     f.add(this.tuning, 'followSharpness', 2, 40, 1);
     f.add(this.tuning, 'autoYawSpeed', 0, 8, 0.1).name('vehicle auto-yaw');
+  }
+
+  /** Screen shake, e.g. potholes and crashes. Stacks, decays quickly. */
+  shake(intensity: number): void {
+    this.shakeAmount = Math.min(1, this.shakeAmount + intensity);
   }
 
   follow(target: CameraTarget, snap = false): void {
@@ -109,6 +115,12 @@ export class ThirdPersonCamera implements GameSystem {
     camera.position.copy(this.smoothPivot).addScaledVector(this.dir, this.currentDistance);
     camera.position.y = Math.max(camera.position.y, 0.3);
     camera.lookAt(this.smoothPivot);
+    if (this.shakeAmount > 0.001) {
+      const a = this.shakeAmount * 0.06;
+      camera.rotation.x += (Math.random() - 0.5) * a;
+      camera.rotation.y += (Math.random() - 0.5) * a;
+      this.shakeAmount *= Math.exp(-8 * realDt);
+    }
 
     const fov = t.baseFov + (this.target.fovBoost?.() ?? 0) * t.sprintFovBoost;
     if (Math.abs(camera.fov - fov) > 0.01) {

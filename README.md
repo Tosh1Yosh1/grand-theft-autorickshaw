@@ -28,6 +28,12 @@ npm run lint
 | Shift | Sprint |
 | Space | Jump (hold for higher) |
 | C | Crouch |
+| F | Get in / out of a vehicle |
+| W / S (in vehicle) | Gas / brake, then reverse |
+| A / D (in vehicle) | Steer |
+| Space (in vehicle) | Handbrake (drift) |
+| H | Horn (hold) |
+| M / T | Auto meter down-up / tamper (3x fare) |
 | B / R | Drop parcels / reset test level |
 | \` | Debug panel |
 | Esc | Release mouse |
@@ -53,6 +59,8 @@ src/
   ui/          HTML overlay: loading screen, error screen, hints, lil-gui debug panel
   content/     ALL text: loading tips, error quips, labels. Lines can be {dirty, clean}.
   player/      Pappu: procedural model, animator, kinematic controller, third-person camera
+  vehicles/    Vehicle (Rapier raycast vehicle + arcade assists), configs, procedural models, fare meter, manager
+  audio/       Procedural WebAudio: horns, engines, thuds, beeps
   vehicles/ ai/ combat/ wanted/ missions/ audio/ assets/   (filled in later phases)
 ```
 

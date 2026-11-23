@@ -71,7 +71,7 @@ export class PappuAnimator {
         shL = shR = -0.4; elL = elR = -0.8;
         break;
       case 'sit': // driving pose
-        hipL = hipR = -1.45; kneeL = kneeR = 1.45; bodyY = -0.05;
+        hipL = hipR = -1.45; kneeL = kneeR = 1.45; bodyY = -0.5;
         shL = shR = -1.1; elL = elR = -0.5; shZ = 0.15;
         break;
     }

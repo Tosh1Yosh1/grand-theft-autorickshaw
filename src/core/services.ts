@@ -1,5 +1,7 @@
 import type { Player } from '../player/Player';
 import type { ThirdPersonCamera } from '../player/ThirdPersonCamera';
+import type { VehicleManager } from '../vehicles/VehicleManager';
+import type { Potholes } from '../world/Potholes';
 
 /**
  * Cross-system handles, filled in as systems init. Optional because init order matters:
@@ -8,4 +10,6 @@ import type { ThirdPersonCamera } from '../player/ThirdPersonCamera';
 export interface Services {
   player?: Player;
   camera?: ThirdPersonCamera;
+  vehicles?: VehicleManager;
+  potholes?: Potholes;
 }
