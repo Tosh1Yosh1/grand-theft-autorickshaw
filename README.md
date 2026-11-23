@@ -36,9 +36,11 @@ npm run lint
 | Space (in vehicle) | Handbrake (drift) |
 | H | Horn (hold) |
 | M / T | Auto meter down-up / tamper (3x fare) |
-| B / R | Drop parcels / reset test level |
+| P / Tab | Phone (WhatsUpp, Map + waypoint, Contacts, BOLX) |
+| R (in vehicle) | Next radio station / off |
+| Esc | Pause menu: settings, controls (rebinding), save, load |
+| B / F8 | Debug: drop parcels / reset parcels |
 | \` | Debug panel |
-| Esc | Release mouse |
 
 ## Debug panel (`)
 
@@ -66,11 +68,13 @@ src/
   world/       City (chunked generation + culling), DayNight (sky dome, sun, night uniforms), Potholes, Parcels
     city/      layout (grid, districts, road graph), district generators, roads/wires/flyover/stalls,
                world-space facade shader (windows, shutters, lit-at-night), sign atlas (all signs = 1 draw call)
-  ui/          HTML overlay: loading screen, error screen, hints, lil-gui debug panel
+  ui/          HTML overlay: HUD, minimap, phone/, menu/ (pause + settings + rebinding), dialogue, subtitles,
+               loading/error screens, lil-gui debug panel
   content/     ALL text: loading tips, error quips, labels. Lines can be {dirty, clean}.
   player/      Pappu: procedural model, animator, kinematic controller, third-person camera
   vehicles/    Vehicle (Rapier raycast vehicle + arcade assists), configs, procedural models, fare meter, manager
-  audio/       Procedural WebAudio: horns, engines, thuds, beeps
+  audio/       Procedural WebAudio: horns, engines, thuds, siren, moo, dhol; MusicEngine (generative station
+               music) + Radio (5 stations, ads, ticker, optional browser TTS for hosts)
   ai/          rig/ (RigInstancer: jointed crowds as one InstancedMesh per part; ModelInstancer: vehicles
                baked per material), peds/ (6 pedestrian types, sidewalks, jaywalking, knockdowns, mobs),
                traffic/ (left-hand lanes on the road graph, honking, wrong-way, overtakes, wrecks),
@@ -90,6 +94,14 @@ src/
 - Game code reads **actions** (`input.isDown('jump')`), never raw keys. Bindings live in `src/core/input/bindings.ts`.
 - Any line that may swear is a `{ dirty, clean }` pair, resolved with `pickLine()` / `resolveLine()` from `src/content/lines.ts`.
 - Assets: CC0 only. Log every third-party asset in `ASSETS_CREDITS.md`; missing ones go in `TODO_ASSETS.md`.
+
+## Radio (in any vehicle, R to cycle)
+
+Bhaukaal FM (parody songs + dedications) · Cricket Kranti (the match that never ends) · Astro Aunty Live (Mercury and your saas) · Uncle Gyaan Radio (forward-powered conspiracies) · Startup Sutra Podcast (two bros, one word: disrupt) · plus ads (Fair & Happy, Instant Loan, IIT coaching for your unborn child...). All music is generated live; all scripts are original. Hosts can be read aloud by your browser's text-to-speech (toggle in Settings).
+
+## Saving
+
+Autosaves after every mission and every 2 minutes when no mission or chappals are active. Sleep at Pandey Niwas (F at the door) to save and skip to 7 AM. Pause menu has Save / Load. Loading always wakes Pappu up at home.
 
 ## Missions
 

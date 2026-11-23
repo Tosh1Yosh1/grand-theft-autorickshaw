@@ -88,6 +88,11 @@ export class MissionManager implements GameSystem {
     f.add({ reset: () => ctx.store.getState().setProgress({ completed: [] }) }, 'reset').name('Reset progress');
   }
 
+  /** Current objective target (for the minimap). */
+  currentTarget(): THREE.Vector3 | null {
+    return this.run ? (this.steps[this.stepIndex]?.target?.() ?? null) : null;
+  }
+
   available(): MissionDef[] {
     const done = new Set(this.ctx.store.getState().progress.completed);
     return this.defs.filter((d) => !done.has(d.id) && d.requires.every((r) => done.has(r)));

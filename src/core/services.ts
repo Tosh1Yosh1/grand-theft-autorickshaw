@@ -6,6 +6,8 @@ import type { Combat } from '../combat/Combat';
 import type { Wanted } from '../wanted/Wanted';
 import type { Police } from '../wanted/Police';
 import type { MissionManager } from '../missions/MissionManager';
+import type { Radio } from '../audio/Radio';
+import type { Phone } from '../ui/phone/Phone';
 import type { Player } from '../player/Player';
 import type { ThirdPersonCamera } from '../player/ThirdPersonCamera';
 import type { VehicleManager } from '../vehicles/VehicleManager';
@@ -32,4 +34,6 @@ export interface Services {
   wanted?: Wanted;
   police?: Police;
   missions?: MissionManager;
+  radio?: Radio;
+  phone?: Phone;
 }

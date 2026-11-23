@@ -54,8 +54,8 @@ export function showError(err: unknown, message?: string): void {
 export function showHint(): void {
   const hint = el('div', 'hint');
   hint.innerHTML =
-    '<b>Mumbhai</b> · <kbd>WASD</kbd> move · <kbd>Shift</kbd> sprint · <kbd>Space</kbd> jump · <kbd>F</kbd> auto in/out · <kbd>H</kbd> horn<br>' +
-    '<kbd>M</kbd>/<kbd>T</kbd> meter/tamper · <kbd>`</kbd> debug: time of day, Potato, Retro 2004, tuning';
+    '<kbd>F</kbd> interact · <kbd>P</kbd> phone · <kbd>R</kbd> radio · <kbd>H</kbd> horn · <kbd>Q</kbd>/<kbd>E</kbd> weapon · <kbd>Esc</kbd> pause';
+  setTimeout(() => hint.classList.add('fade'), 20000);
   root.append(hint);
 }
 

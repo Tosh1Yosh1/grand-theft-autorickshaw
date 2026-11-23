@@ -188,7 +188,7 @@ export function buildFlyover(b: CityBuilder) {
 }
 
 /** Chai tapris, paan shops and vada pav stalls on the pavement. */
-export function buildStalls(b: CityBuilder, r: Rng, blk: Block, count: number, startup: boolean) {
+export function buildStalls(b: CityBuilder, r: Rng, blk: Block, count: number, startup: boolean, out?: { position: THREE.Vector3; chai: boolean }[]) {
   const kinds = startup
     ? [['ARTISANAL VADA PAV', '₹400. Gluten-free pav extra.']]
     : [['PAPPU CHAI', 'Cutting ₹10. Udhaar kal.'], ['PAAN CORNER', 'Meetha, saada, aur "special"'], ['VADA PAV', '₹15. Chutney free.'], ['JUICE CENTRE', 'Mausambi. Hygiene: optional.']];
@@ -204,6 +204,7 @@ export function buildStalls(b: CityBuilder, r: Rng, blk: Block, count: number, s
     b.put('stall', x, 2.3, z, 2.4, 0.12, 2.4, yaw, pick(r, ['#e63946', '#2a9d8f', '#f4a261', '#3a86ff', '#ffb703']));
     for (const [px, pz] of [[-1, -1], [1, 1], [-1, 1], [1, -1]] as const) b.put('pole', x + px * 1.05, 0.15, z + pz * 1.05, 0.06, 2.2, 0.06);
     const [title, sub] = pick(r, kinds);
+    out?.push({ position: new THREE.Vector3(x, 0, z), chai: title === 'PAPPU CHAI' || title === 'VADA PAV' || startup });
     const slot = b.atlas.slot(`stall:${title}`, { title: title!, sub, bg: '#ffd23f', fg: '#7a1f12' });
     const fx = Math.sin(yaw) * 1.25;
     const fz = Math.cos(yaw) * 1.25;

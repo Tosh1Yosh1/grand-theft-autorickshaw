@@ -15,6 +15,8 @@ export class City implements GameSystem {
   readonly name = 'city';
   landmarks!: Landmarks;
   currentDistrict: DistrictId | null = null;
+  /** Street stalls (chai heals). */
+  readonly stalls: { position: THREE.Vector3; chai: boolean }[] = [];
   private ctx!: GameContext;
   private chunks: Chunk[] = [];
   private water!: THREE.Mesh;
@@ -30,10 +32,10 @@ export class City implements GameSystem {
 
     for (const blk of blockList) {
       switch (blk.district) {
-        case 'jugaadpur': buildJugaadpur(b, r, blk); buildStalls(b, r, blk, 3, false); break;
-        case 'sarkari': buildSarkari(b, r, blk, lm); buildStalls(b, r, blk, 1, false); break;
-        case 'startup': buildStartup(b, r, blk, lm); buildStalls(b, r, blk, 1, true); break;
-        case 'filmistan': buildFilmistan(b, r, blk, lm); buildStalls(b, r, blk, 1, false); break;
+        case 'jugaadpur': buildJugaadpur(b, r, blk); buildStalls(b, r, blk, 3, false, this.stalls); break;
+        case 'sarkari': buildSarkari(b, r, blk, lm); buildStalls(b, r, blk, 1, false, this.stalls); break;
+        case 'startup': buildStartup(b, r, blk, lm); buildStalls(b, r, blk, 1, true, this.stalls); break;
+        case 'filmistan': buildFilmistan(b, r, blk, lm); buildStalls(b, r, blk, 1, false, this.stalls); break;
         case 'kachra': buildKachra(b, r, blk, lm); break;
       }
     }

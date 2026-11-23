@@ -10,21 +10,33 @@ const CUP = (fill: number) =>
 
 let root: HTMLDivElement | null = null;
 let last = '';
+let lastMoney: number | null = null;
 
-export function updateHud(opts: { seen: boolean; clock: string; district: string }): void {
+/** Floating "+₹1,500" / "-₹200" next to the money counter. */
+function moneyPopup(delta: number): void {
+  const el = document.createElement('div');
+  el.className = `money-pop ${delta > 0 ? 'up' : 'down'}`;
+  el.textContent = `${delta > 0 ? '+' : '-'}${formatRupees(Math.abs(delta))}`;
+  root?.append(el);
+  setTimeout(() => el.remove(), 1600);
+}
+
+export function updateHud(opts: { seen: boolean; clock: string; district: string; rank: string }): void {
   if (!root) {
     root = document.createElement('div');
     root.className = 'hud';
     document.getElementById('overlay')!.append(root);
   }
   const p = store.getState().player;
-  const key = `${p.money}|${Math.ceil(p.health)}|${p.wanted}|${opts.seen}|${p.weapon}|${opts.clock}|${opts.district}`;
+  const key = `${p.money}|${Math.ceil(p.health)}|${p.wanted}|${opts.seen}|${p.weapon}|${opts.clock}|${opts.district}|${opts.rank}`;
+  if (lastMoney !== null && p.money !== lastMoney) moneyPopup(p.money - lastMoney);
+  lastMoney = p.money;
   if (key === last) return;
   last = key;
   const cups = Array.from({ length: 5 }, (_, i) => CUP(Math.max(0, Math.min(1, (p.health - i * 20) / 20)))).join('');
   const chappals = Array.from({ length: 5 }, (_, i) => CHAPPAL(i < p.wanted, opts.seen)).join('');
   root.innerHTML = `
-    <div class="hud-row hud-time">${opts.clock} · ${opts.district}</div>
+    <div class="hud-row hud-time">${opts.clock} · ${opts.district} · <b>${opts.rank}</b></div>
     <div class="hud-row hud-money">${formatRupees(p.money)}</div>
     <div class="hud-row hud-cups" title="Health">${cups}</div>
     <div class="hud-row hud-chappals" title="Challan level">${chappals}</div>

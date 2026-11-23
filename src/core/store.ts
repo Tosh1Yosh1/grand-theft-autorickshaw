@@ -14,6 +14,8 @@ export interface Settings {
   subtitles: boolean;
   /** Early-2000s console look: low internal res, chunky pixels, heavier haze. */
   retro: boolean;
+  /** Browser text-to-speech reads the radio hosts. */
+  radioVoice: boolean;
 }
 
 export type WeaponId = 'fists' | 'chappal' | 'bat' | 'slingshot' | 'belan';
@@ -63,6 +65,7 @@ export const DEFAULT_SETTINGS: Settings = {
   radioVolume: 0.6,
   subtitles: true,
   retro: false,
+  radioVoice: true,
 };
 
 export const store = createStore<GameState>()((set) => ({

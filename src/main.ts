@@ -3,7 +3,14 @@ import { Animals } from './ai/animals/Animals';
 import { StreetEvents } from './ai/events/StreetEvents';
 import { Pedestrians } from './ai/peds/Pedestrians';
 import { Traffic } from './ai/traffic/Traffic';
+import { Radio } from './audio/Radio';
 import { Combat } from './combat/Combat';
+import { hasSave, loadGame, saveGame } from './core/save';
+import { Minimap } from './ui/Minimap';
+import { PauseMenu } from './ui/menu/PauseMenu';
+import { Phone } from './ui/phone/Phone';
+import { Shops } from './world/Shops';
+import { rankOf } from './missions/MissionManager';
 import { MissionManager } from './missions/MissionManager';
 import { MeterDown } from './missions/defs/m1MeterDown';
 import { DabbaDash } from './missions/defs/m2DabbaDash';
@@ -73,11 +80,16 @@ async function boot(): Promise<void> {
   await engine.add(new Police());
   await engine.add(new PlayerHealth());
   await engine.add(new MissionManager([MeterDown, DabbaDash, Shaadi]));
+  await engine.add(new Radio());
+  await engine.add(new Phone());
+  await engine.add(new Minimap());
+  await engine.add(new Shops());
+  await engine.add(new PauseMenu());
   // Weapon pickups near home to get started.
   combat.addPickup('bat', new THREE.Vector3(SPAWN.x + 8, 0, SPAWN.z + 0.5));
   combat.addPickup('slingshot', new THREE.Vector3(SPAWN.x - 10, 0, SPAWN.z + 0.5));
   const sh = city.landmarks.safehouse;
-  await engine.add(new Parcels(new THREE.Vector3(sh.x + 6, 0, sh.z + 1)));
+  await engine.add(new Parcels(new THREE.Vector3(sh.x + 14, 0, sh.z + 1)));
 
   const readout = createActionReadout();
   const services = engine.ctx.services;
@@ -90,6 +102,7 @@ async function boot(): Promise<void> {
         seen: services.wanted?.seen ?? false,
         clock: services.dayNight?.clockText ?? '',
         district: DISTRICT_INFO[services.city?.currentDistrict ?? 'jugaadpur']?.name ?? '',
+        rank: rankOf(engine.ctx.store.getState().player.respect),
       });
     },
   };
@@ -97,6 +110,13 @@ async function boot(): Promise<void> {
 
   // Handy for console poking and automated smoke tests.
   Object.assign(window, { gtar: engine.ctx, gtarEngine: engine });
+
+  // Progress: continue from the last save, autosave after missions and every 2 minutes when calm.
+  if (hasSave()) loadGame(engine.ctx);
+  engine.ctx.events.on('mission:passed', () => saveGame(engine.ctx));
+  setInterval(() => {
+    if (!services.missions?.run && (services.wanted?.level ?? 0) === 0) saveGame(engine.ctx);
+  }, 120000);
 
   engine.start();
   loading.hide();
