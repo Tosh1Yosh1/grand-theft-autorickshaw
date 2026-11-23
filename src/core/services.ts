@@ -1,3 +1,7 @@
+import type { Pedestrians } from '../ai/peds/Pedestrians';
+import type { Traffic } from '../ai/traffic/Traffic';
+import type { Animals } from '../ai/animals/Animals';
+import type { StreetEvents } from '../ai/events/StreetEvents';
 import type { Player } from '../player/Player';
 import type { ThirdPersonCamera } from '../player/ThirdPersonCamera';
 import type { VehicleManager } from '../vehicles/VehicleManager';
@@ -16,4 +20,8 @@ export interface Services {
   potholes?: Potholes;
   city?: City;
   dayNight?: DayNight;
+  peds?: Pedestrians;
+  traffic?: Traffic;
+  animals?: Animals;
+  events?: StreetEvents;
 }

@@ -1,4 +1,8 @@
 import * as THREE from 'three';
+import { Animals } from './ai/animals/Animals';
+import { StreetEvents } from './ai/events/StreetEvents';
+import { Pedestrians } from './ai/peds/Pedestrians';
+import { Traffic } from './ai/traffic/Traffic';
 import { WEBGL_MISSING } from './content/errors';
 import { Engine } from './core/Engine';
 import { PostFX } from './core/PostFX';
@@ -49,6 +53,10 @@ async function boot(): Promise<void> {
   const vehicles = new VehicleManager();
   await engine.add(vehicles);
   vehicles.spawn('auto', new THREE.Vector3(SPAWN.x + 1, 0.8, SPAWN.z - 5), Math.PI / 2);
+  await engine.add(new Pedestrians());
+  await engine.add(new Traffic());
+  await engine.add(new Animals());
+  await engine.add(new StreetEvents());
   const sh = city.landmarks.safehouse;
   await engine.add(new Parcels(new THREE.Vector3(sh.x + 6, 0, sh.z + 1)));
 

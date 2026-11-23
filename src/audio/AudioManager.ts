@@ -92,6 +92,29 @@ class AudioManagerImpl {
     };
   }
 
+  /** A short honk from somewhere in the city; volume falls off with distance. */
+  honkAt(kind: HornKind, distance: number, duration = 0.25): void {
+    if (!this.ctx || distance > 60) return;
+    const stop = this.hornWithVolume(kind, Math.max(0.05, 1 - distance / 60) * 0.6);
+    setTimeout(stop, duration * 1000);
+  }
+
+  private hornWithVolume(kind: HornKind, vol: number): () => void {
+    const prev = this.hornBus.gain.value;
+    const bus = this.ctx!.createGain();
+    bus.gain.value = vol;
+    bus.connect(this.hornBus);
+    const saved = this.hornBus;
+    this.hornBus = bus;
+    const stop = this.horn(kind);
+    this.hornBus = saved;
+    void prev;
+    return () => {
+      stop();
+      setTimeout(() => bus.disconnect(), 400);
+    };
+  }
+
   /** Low thump + rattle, for potholes and crashes. intensity 0..1 */
   thud(intensity: number): void {
     const ctx = this.ctx;
@@ -108,6 +131,90 @@ class AudioManagerImpl {
     src.connect(lp).connect(g).connect(this.sfx);
     src.start(t);
     src.stop(t + 0.4);
+  }
+
+  /** A cow expressing an opinion. */
+  moo(distance = 0, angry = false): void {
+    const ctx = this.ctx;
+    if (!ctx || distance > 50) return;
+    const t = ctx.currentTime;
+    const vol = 0.35 * (1 - distance / 50);
+    const o = ctx.createOscillator();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(angry ? 190 : 150, t);
+    o.frequency.linearRampToValueAtTime(angry ? 230 : 170, t + 0.25);
+    o.frequency.linearRampToValueAtTime(angry ? 120 : 110, t + 1.1);
+    const formant = ctx.createBiquadFilter();
+    formant.type = 'bandpass';
+    formant.frequency.setValueAtTime(400, t);
+    formant.frequency.linearRampToValueAtTime(900, t + 0.4);
+    formant.frequency.linearRampToValueAtTime(500, t + 1.1);
+    formant.Q.value = 3;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.15);
+    g.gain.linearRampToValueAtTime(0, t + 1.2);
+    o.connect(formant).connect(g).connect(this.sfx);
+    o.start(t);
+    o.stop(t + 1.3);
+  }
+
+  /** Street dog: two quick woofs. */
+  woof(distance = 0): void {
+    const ctx = this.ctx;
+    if (!ctx || distance > 45) return;
+    const vol = 0.3 * (1 - distance / 45);
+    for (const delay of [0, 0.22]) {
+      const t = ctx.currentTime + delay;
+      const src = ctx.createBufferSource();
+      src.buffer = this.noiseBuffer();
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.setValueAtTime(700, t);
+      bp.frequency.exponentialRampToValueAtTime(350, t + 0.12);
+      bp.Q.value = 4;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+      src.connect(bp).connect(g).connect(this.sfx);
+      src.start(t);
+      src.stop(t + 0.16);
+    }
+  }
+
+  /** One dhol hit (baraat). Low thump + slap. */
+  dhol(distance: number, accent = false): void {
+    const ctx = this.ctx;
+    if (!ctx || distance > 70) return;
+    const t = ctx.currentTime;
+    const vol = (accent ? 0.5 : 0.32) * (1 - distance / 70);
+    const o = ctx.createOscillator();
+    o.frequency.setValueAtTime(accent ? 90 : 140, t);
+    o.frequency.exponentialRampToValueAtTime(50, t + 0.18);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+    o.connect(g).connect(this.sfx);
+    o.start(t);
+    o.stop(t + 0.3);
+  }
+
+  /** Glass crack for cricket balls through windshields. */
+  crack(): void {
+    const ctx = this.ctx;
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    const src = ctx.createBufferSource();
+    src.buffer = this.noiseBuffer();
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 2500;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.5, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    src.connect(hp).connect(g).connect(this.sfx);
+    src.start(t);
+    src.stop(t + 0.35);
   }
 
   /** Short beep for UI, meter clicks, phone. */

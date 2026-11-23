@@ -144,7 +144,7 @@ export function buildTrucks(b: CityBuilder, r: Rng, count: number) {
     b.block('plain', x + fx * 2.6, z + fz * 2.6, ns ? 2.3 : 1.8, 2.6, ns ? 1.8 : 2.3, color, 0, 0.5);
     b.block('plain', x - fx * 0.8, z - fz * 0.8, ns ? 2.4 : 5, 2.8, ns ? 5 : 2.4, '#8d6e63', 0, 0.5);
     const text = pick(r, TRUCK_BACKS);
-    const slot = b.atlas.slot(`truck:${text}`, { title: text, sub: 'Jai Mata Di · 9876X XXXX', bg: '#ffd166', fg: '#9d0208', border: '#06d6a0' });
+    const slot = b.atlas.slot(`truck:${text}`, { title: text, sub: 'Mummy ka aashirwad · 9876X XXXX', bg: '#ffd166', fg: '#9d0208', border: '#06d6a0' });
     b.atlas.place(slot, x - fx * 3.32, 1.8, z - fz * 3.32, 2.2, 1.1, yaw + Math.PI);
   }
 }

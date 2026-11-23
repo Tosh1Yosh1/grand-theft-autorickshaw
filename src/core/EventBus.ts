@@ -6,6 +6,14 @@ export interface GameEvents {
   'vehicle:exit': { id: string };
   'vehicle:pothole': { damage: number };
   'district:enter': { id: string };
+  'crime:pedHit': { position: import('three').Vector3 };
+  'crime:carHit': { position: import('three').Vector3 };
+  'crime:cowHit': { position: import('three').Vector3 };
+  'mob:caught': { damage: number };
+  'player:honk': { position: import('three').Vector3; heading: number };
+  'event:start': { kind: string; position: import('three').Vector3 };
+  'event:end': { kind: string };
+  'vehicle:windshield': { by: string };
 }
 
 type Handler<T> = (payload: T) => void;

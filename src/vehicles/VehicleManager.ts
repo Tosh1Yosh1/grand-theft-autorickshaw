@@ -99,7 +99,11 @@ export class VehicleManager implements GameSystem {
         if (Math.abs(v.speed) > 3) this.say(EXIT_MOVING_LINES);
         else this.exit();
       }
-      if (input.wasPressed('horn')) this.stopHorn = audio.horn(v.config.horn);
+      if (input.wasPressed('horn')) {
+        this.stopHorn = audio.horn(v.config.horn);
+        this.ctx.services.peds?.honk(v.position, v.heading);
+        this.ctx.events.emit('player:honk', { position: v.position.clone(), heading: v.heading });
+      }
       if (input.wasReleased('horn')) {
         this.stopHorn?.();
         this.stopHorn = null;

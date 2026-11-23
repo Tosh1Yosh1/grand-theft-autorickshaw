@@ -47,6 +47,8 @@ npm run lint
 - **Physics**: collider wireframe, drop parcels, reset.
 - **Player**: speeds, accel/decel, air control, jump height, gravity, coyote time, jump buffer, turn speed; *Copy tuning JSON* to paste good values back into `PLAYER_TUNING`.
 - **Camera**: FOV, sprint FOV kick, follow sharpness.
+- **NPCs**: ped / traffic density, wrong-way chance, cow and dog counts, spawn a cow in front of you, start an angry mob.
+- **Street events**: toggle random events, start any event, end all.
 - **Time of day**: scrub the hour, change cycle length (default 12 real minutes), freeze time.
 - **Post FX**: warmth, contrast, saturation, vignette, grain.
 - **Graphics → Retro 2004 look**: low internal resolution with nearest-neighbour upscale, posterised colour, heavier smog.
@@ -67,7 +69,11 @@ src/
   player/      Pappu: procedural model, animator, kinematic controller, third-person camera
   vehicles/    Vehicle (Rapier raycast vehicle + arcade assists), configs, procedural models, fare meter, manager
   audio/       Procedural WebAudio: horns, engines, thuds, beeps
-  ai/ combat/ wanted/ missions/ assets/   (filled in later phases)
+  ai/          rig/ (RigInstancer: jointed crowds as one InstancedMesh per part; ModelInstancer: vehicles
+               baked per material), peds/ (6 pedestrian types, sidewalks, jaywalking, knockdowns, mobs),
+               traffic/ (left-hand lanes on the road graph, honking, wrong-way, overtakes, wrecks),
+               animals/ (cows, street dogs), events/ (baraat, gully cricket, monsoon, digging, rally, rain)
+  combat/ wanted/ missions/ assets/   (filled in later phases)
 ```
 
 ### Conventions
