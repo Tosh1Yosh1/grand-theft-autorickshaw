@@ -54,8 +54,8 @@ export function showError(err: unknown, message?: string): void {
 export function showHint(): void {
   const hint = el('div', 'hint');
   hint.innerHTML =
-    '<b>Phase 2: Auto time</b> · <kbd>F</kbd> get in/out · <kbd>W S</kbd> gas/brake · <kbd>A D</kbd> steer · <kbd>Space</kbd> handbrake<br>' +
-    '<kbd>H</kbd> horn · <kbd>M</kbd> meter · <kbd>T</kbd> tamper meter · on foot: <kbd>Shift</kbd> sprint <kbd>Space</kbd> jump · <kbd>`</kbd> debug';
+    '<b>Mumbhai</b> · <kbd>WASD</kbd> move · <kbd>Shift</kbd> sprint · <kbd>Space</kbd> jump · <kbd>F</kbd> auto in/out · <kbd>H</kbd> horn<br>' +
+    '<kbd>M</kbd>/<kbd>T</kbd> meter/tamper · <kbd>`</kbd> debug: time of day, Potato, Retro 2004, tuning';
   root.append(hint);
 }
 

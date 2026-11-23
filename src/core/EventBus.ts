@@ -5,6 +5,7 @@ export interface GameEvents {
   'vehicle:enter': { id: string };
   'vehicle:exit': { id: string };
   'vehicle:pothole': { damage: number };
+  'district:enter': { id: string };
 }
 
 type Handler<T> = (payload: T) => void;

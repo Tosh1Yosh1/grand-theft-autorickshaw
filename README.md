@@ -47,6 +47,9 @@ npm run lint
 - **Physics**: collider wireframe, drop parcels, reset.
 - **Player**: speeds, accel/decel, air control, jump height, gravity, coyote time, jump buffer, turn speed; *Copy tuning JSON* to paste good values back into `PLAYER_TUNING`.
 - **Camera**: FOV, sprint FOV kick, follow sharpness.
+- **Time of day**: scrub the hour, change cycle length (default 12 real minutes), freeze time.
+- **Post FX**: warmth, contrast, saturation, vignette, grain.
+- **Graphics → Retro 2004 look**: low internal resolution with nearest-neighbour upscale, posterised colour, heavier smog.
 
 ## Project layout
 
@@ -55,13 +58,16 @@ src/
   core/        Engine (renderer, fixed 60 Hz loop), Physics (Rapier + interpolation),
                store (zustand vanilla), safeStorage, EventBus, graphics presets
     input/     Action-based input, data-driven bindings, gamepad stub
-  world/       Levels and props (procedural)
+               PostFX: bloom, warm split-tone grade, vignette, grain, Retro 2004 posterise
+  world/       City (chunked generation + culling), DayNight (sky dome, sun, night uniforms), Potholes, Parcels
+    city/      layout (grid, districts, road graph), district generators, roads/wires/flyover/stalls,
+               world-space facade shader (windows, shutters, lit-at-night), sign atlas (all signs = 1 draw call)
   ui/          HTML overlay: loading screen, error screen, hints, lil-gui debug panel
   content/     ALL text: loading tips, error quips, labels. Lines can be {dirty, clean}.
   player/      Pappu: procedural model, animator, kinematic controller, third-person camera
   vehicles/    Vehicle (Rapier raycast vehicle + arcade assists), configs, procedural models, fare meter, manager
   audio/       Procedural WebAudio: horns, engines, thuds, beeps
-  vehicles/ ai/ combat/ wanted/ missions/ audio/ assets/   (filled in later phases)
+  ai/ combat/ wanted/ missions/ assets/   (filled in later phases)
 ```
 
 ### Conventions
@@ -70,6 +76,20 @@ src/
 - Game code reads **actions** (`input.isDown('jump')`), never raw keys. Bindings live in `src/core/input/bindings.ts`.
 - Any line that may swear is a `{ dirty, clean }` pair, resolved with `pickLine()` / `resolveLine()` from `src/content/lines.ts`.
 - Assets: CC0 only. Log every third-party asset in `ASSETS_CREDITS.md`; missing ones go in `TODO_ASSETS.md`.
+
+## Mumbhai map
+
+10x10 grid of 60 m blocks (600 m square), roads every 60 m, docks and sea to the south.
+
+| District | Where | Flavour |
+| --- | --- | --- |
+| Jugaadpur | centre/west | Pastel chawls, galis, balconies, laundry, string lights, tapris |
+| Startup Nagar | north-east | Glass towers, rooftop startup logos, ₹400 vada pav |
+| Filmistan | north-west | Studio sheds, fake palace sets |
+| Sarkari Colony | east | Identical colony blocks, the Sarkari Daftar |
+| Kachra Ghat | south | Godowns, containers, cranes, the sea |
+
+A half-built flyover runs east-west across the north and stops in mid-air.
 
 ## Tech
 

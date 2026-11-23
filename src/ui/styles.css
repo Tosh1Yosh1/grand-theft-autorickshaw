@@ -58,3 +58,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #1a0f05; fon
 .vh-meter { font: bold 13px monospace; color: #ff5b4f; background: #111; padding: 3px 6px; border-radius: 4px; display: inline-block; }
 .vh-meter.tampered { animation: blink 0.6s steps(2) infinite; }
 @keyframes blink { 50% { opacity: 0.4; } }
+
+.district-banner { position: absolute; right: 24px; top: 18%; text-align: right; opacity: 0; transform: translateX(30px);
+  transition: opacity 0.5s, transform 0.5s; max-width: calc(100vw - 48px); }
+.district-banner.show { opacity: 1; transform: none; }
+.db-name { font-size: clamp(28px, 5vw, 56px); font-weight: 900; font-style: italic; text-shadow: 3px 3px 0 #000, -1px -1px 0 #000; }
+.db-tag { font-size: clamp(13px, 2vw, 18px); color: var(--paper); text-shadow: 1px 1px 0 #000; }

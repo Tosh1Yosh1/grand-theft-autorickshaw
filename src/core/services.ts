@@ -1,6 +1,8 @@
 import type { Player } from '../player/Player';
 import type { ThirdPersonCamera } from '../player/ThirdPersonCamera';
 import type { VehicleManager } from '../vehicles/VehicleManager';
+import type { City } from '../world/City';
+import type { DayNight } from '../world/DayNight';
 import type { Potholes } from '../world/Potholes';
 
 /**
@@ -12,4 +14,6 @@ export interface Services {
   camera?: ThirdPersonCamera;
   vehicles?: VehicleManager;
   potholes?: Potholes;
+  city?: City;
+  dayNight?: DayNight;
 }

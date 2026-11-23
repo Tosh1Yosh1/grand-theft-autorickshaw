@@ -12,6 +12,8 @@ export interface Settings {
   hornVolume: number;
   radioVolume: number;
   subtitles: boolean;
+  /** Early-2000s console look: low internal res, chunky pixels, heavier haze. */
+  retro: boolean;
 }
 
 export interface PlayerState {
@@ -46,6 +48,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hornVolume: 0.8,
   radioVolume: 0.6,
   subtitles: true,
+  retro: false,
 };
 
 export const store = createStore<GameState>()((set) => ({

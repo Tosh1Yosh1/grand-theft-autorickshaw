@@ -24,6 +24,7 @@ export class DebugGui implements GameSystem {
     const proxy = {
       potato: s.settings.graphics === 'potato',
       preset: s.settings.graphics,
+      retro: s.settings.retro,
       profanity: s.settings.profanity,
       mouseSensitivity: s.settings.mouseSensitivity,
       invertY: s.settings.invertY,
@@ -40,6 +41,7 @@ export class DebugGui implements GameSystem {
       .onChange((v: boolean) => set.setSettings({ graphics: v ? 'potato' : 'normal' }));
     const presetCtl = gfx.add(proxy, 'preset', ['potato', 'normal', 'ultra'] satisfies GraphicsPreset[]).name('Preset')
       .onChange((v: GraphicsPreset) => set.setSettings({ graphics: v }));
+    gfx.add(proxy, 'retro').name('Retro 2004 look').onChange((v: boolean) => set.setSettings({ retro: v }));
 
     const settings = debugFolder('Settings');
     settings.add(proxy, 'profanity').name('Profanity (gaali)').onChange((v: boolean) => set.setSettings({ profanity: v }));

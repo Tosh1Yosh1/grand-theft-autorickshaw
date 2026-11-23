@@ -11,6 +11,11 @@ const MAX_STEPS_PER_FRAME = 5; // avoid the spiral of death on slow frames
 export class Engine {
   readonly ctx: GameContext;
   readonly sun: THREE.DirectionalLight;
+  readonly hemi: THREE.HemisphereLight;
+  /** Post-processing replaces the plain render call. */
+  renderOverride: ((dt: number) => void) | null = null;
+  /** Called after the canvas is resized (post-processing needs to know). */
+  onResize: ((w: number, h: number) => void) | null = null;
   private systems: GameSystem[] = [];
   private accumulator = 0;
   private lastTime = 0;
@@ -26,6 +31,7 @@ export class Engine {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.info.autoReset = false; // count the whole frame (shadows + post passes), reset per frame
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -33,17 +39,20 @@ export class Engine {
     scene.background = new THREE.Color('#f2c38b');
     scene.fog = new THREE.Fog('#f2c38b', 40, 260);
 
-    const camera = new THREE.PerspectiveCamera(65, 1, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(65, 1, 0.1, 1500);
 
     const hemi = new THREE.HemisphereLight('#ffe7c2', '#8a5a3a', 1.1);
+    this.hemi = hemi;
     scene.add(hemi);
     this.sun = new THREE.DirectionalLight('#ffd49a', 2.4);
     this.sun.position.set(30, 50, 20);
     const sc = this.sun.shadow.camera;
-    sc.left = sc.bottom = -40;
-    sc.right = sc.top = 40;
-    sc.far = 150;
-    scene.add(this.sun);
+    sc.left = sc.bottom = -60;
+    sc.right = sc.top = 60;
+    sc.far = 260;
+    this.sun.shadow.bias = -0.0005;
+    this.sun.shadow.normalBias = 0.04;
+    scene.add(this.sun, this.sun.target);
 
     this.ctx = {
       scene,
@@ -56,10 +65,11 @@ export class Engine {
       services: {},
     };
 
-    applyGraphics(renderer, scene, this.sun, store.getState().settings.graphics);
+    const st = store.getState().settings;
+    applyGraphics(renderer, scene, this.sun, st.graphics, st.retro);
     store.subscribe((s, prev) => {
-      if (s.settings.graphics !== prev.settings.graphics) {
-        applyGraphics(renderer, scene, this.sun, s.settings.graphics);
+      if (s.settings.graphics !== prev.settings.graphics || s.settings.retro !== prev.settings.retro) {
+        applyGraphics(renderer, scene, this.sun, s.settings.graphics, s.settings.retro);
         this.resize();
       }
     });
@@ -92,6 +102,7 @@ export class Engine {
   }
 
   private frame = (now: number): void => {
+    this.ctx.renderer.info.reset();
     const realDt = Math.min((now - this.lastTime) / 1000, 0.25);
     this.lastTime = now;
     const { timeScale, paused, physicsWireframe } = store.getState().debug;
@@ -110,7 +121,8 @@ export class Engine {
 
     for (const s of this.systems) s.update?.(dt);
     this.ctx.physics.updateDebug(this.ctx.scene, physicsWireframe);
-    this.ctx.renderer.render(this.ctx.scene, this.ctx.camera);
+    if (this.renderOverride) this.renderOverride(realDt);
+    else this.ctx.renderer.render(this.ctx.scene, this.ctx.camera);
     this.ctx.input.endFrame();
 
     this.updateStats(realDt);
@@ -138,5 +150,6 @@ export class Engine {
     renderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    this.onResize?.(w, h);
   };
 }

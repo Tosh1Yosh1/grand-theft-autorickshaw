@@ -60,6 +60,8 @@ export class Player implements GameSystem {
     fovBoost: () => (this.ctx.input.isDown('sprint') && this.speed2D() > this.tuning.runSpeed ? 1 : 0),
   };
 
+  constructor(private readonly spawn = new THREE.Vector3(0, 0, 6)) {}
+
   init(ctx: GameContext): void {
     this.ctx = ctx;
     ctx.services.player = this;
@@ -70,7 +72,7 @@ export class Player implements GameSystem {
     ctx.scene.add(this.rig.root);
     this.animator = new PappuAnimator(this.rig);
 
-    this.body = world.createRigidBody(R.RigidBodyDesc.kinematicPositionBased().setTranslation(0, CENTER_Y + 0.5, 6));
+    this.body = world.createRigidBody(R.RigidBodyDesc.kinematicPositionBased().setTranslation(this.spawn.x, this.spawn.y + CENTER_Y + 0.5, this.spawn.z));
     this.collider = world.createCollider(R.ColliderDesc.capsule(HALF_HEIGHT, RADIUS), this.body);
     this.cameraTarget.excludeBody = this.body;
 
@@ -104,7 +106,7 @@ export class Player implements GameSystem {
     f.add(this.tuning, 'jumpBuffer', 0, 0.4, 0.01);
     f.add(this.tuning, 'turnSpeed', 2, 30, 0.5);
     f.add({ copy: () => navigator.clipboard?.writeText(JSON.stringify(this.tuning, null, 2)) }, 'copy').name('Copy tuning JSON');
-    f.add({ respawn: () => this.teleport(new THREE.Vector3(0, 1, 6)) }, 'respawn').name('Respawn Pappu');
+    f.add({ respawn: () => this.teleport(this.spawn.clone().setY(1)) }, 'respawn').name('Respawn Pappu');
   }
 
   get position(): THREE.Vector3 {
@@ -186,7 +188,7 @@ export class Player implements GameSystem {
     if (this.velocity.y > 0 && moved.y < desired.y * 0.5) this.velocity.y = 0;
 
     // Fell off the world? Back to spawn, no questions asked.
-    if (this.currPos.y < -30) this.teleport(new THREE.Vector3(0, 2, 6));
+    if (this.currPos.y < -30) this.teleport(this.spawn.clone().setY(2));
   }
 
   update(dt: number): void {
