@@ -118,6 +118,7 @@ export class Wanted implements GameSystem {
   }
 
   update(): void {
+    if (this.ctx.clock.scale === 0) return; // cutscene: dialogue owns the keyboard
     this.dealAvailable = false;
     this.dealAction = null;
     const level = this.level;

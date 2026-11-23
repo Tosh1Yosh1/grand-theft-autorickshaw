@@ -82,6 +82,7 @@ export class Combat implements GameSystem {
 
   update(dt: number): void {
     const { input, services, store, clock } = this.ctx;
+    if (this.ctx.clock.scale === 0) return; // cutscene: dialogue owns the keyboard
     const player = services.player;
     const realDt = clock.scale > 0 ? dt / clock.scale : dt;
 

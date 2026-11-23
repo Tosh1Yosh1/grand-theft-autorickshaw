@@ -91,6 +91,7 @@ export class VehicleManager implements GameSystem {
 
   update(dt: number): void {
     const { input, services } = this.ctx;
+    if (this.ctx.clock.scale === 0) return; // cutscene: dialogue owns the keyboard
     const player = services.player;
     for (const v of this.vehicles) v.updateVisuals();
     if (!player) return;
@@ -140,7 +141,7 @@ export class VehicleManager implements GameSystem {
       const d = v.position.distanceTo(player.position);
       if (d < best) { best = d; nearest = v; }
     }
-    if (services.wanted?.dealAvailable) return;
+    if (services.wanted?.dealAvailable || services.missions?.markerNearby) return;
     setPrompt(nearest ? `<kbd>F</kbd> ${nearest.config.hasMeter ? 'Auto chalao' : `Drive ${nearest.config.name}`}` : null);
     if (nearest && input.wasPressed('interact')) this.enter(nearest);
   }

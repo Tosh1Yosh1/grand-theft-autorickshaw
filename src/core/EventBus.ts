@@ -21,6 +21,8 @@ export interface GameEvents {
   'player:busted': { fine: number };
   'wanted:change': { level: number };
   'phone:call': { from: string };
+  'mission:passed': { id: string };
+  'mission:failed': { id: string };
 }
 
 type Handler<T> = (payload: T) => void;

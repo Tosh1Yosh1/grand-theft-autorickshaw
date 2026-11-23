@@ -96,3 +96,18 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #1a0f05; fon
 .crack { position: absolute; inset: 0; transition: opacity 1.5s; }
 .crack svg { width: 100%; height: 100%; }
 .crack.fade { opacity: 0; }
+
+.dialogue { position: absolute; left: 50%; bottom: 13vh; transform: translateX(-50%); width: min(760px, calc(100vw - 32px));
+  background: rgba(10,5,0,0.82); border: 2px solid var(--saffron); border-radius: 10px; padding: 12px 18px; display: none; }
+.dialogue.show { display: block; }
+.dl-who { color: var(--saffron); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-size: 14px; }
+.dl-text { font-size: clamp(16px, 2.2vw, 21px); margin-top: 4px; }
+.dl-hint { font-size: 11px; opacity: 0.6; text-align: right; margin-top: 6px; }
+.objective { position: absolute; left: 16px; top: 14px; max-width: min(420px, calc(100vw - 200px)); background: rgba(20,10,0,0.7);
+  border-left: 4px solid var(--saffron); padding: 8px 12px; border-radius: 0 8px 8px 0; display: none; }
+.objective.show { display: block; }
+.ob-title { font-size: 12px; color: var(--saffron); text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+.ob-text { font-size: 16px; margin-top: 2px; }
+.ob-extra { font-size: 13px; margin-top: 4px; opacity: 0.95; }
+.ob-bar { height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; margin-top: 3px; overflow: hidden; }
+.ob-bar div { height: 100%; }

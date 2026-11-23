@@ -78,7 +78,10 @@ src/
   combat/      Weapons, melee cones, boomerang chappal + gulel projectiles, slow-mo slap, pickups
   wanted/      Challan system (0-5 chappals, cooling, hiding, bribes/respray/neta) and Police dispatcher
                (hawaldars, bike pair, jeeps, squad, news van, roadblocks, drone, ringtone siren)
-  missions/ assets/   (filled in later phases)
+  missions/    MissionManager (markers, step machine, objective HUD, target beam, guide arrow, pass/fail,
+               rewards, ranks), MissionRun (auto-cleanup of spawned peds/vehicles), steps (goTo/until/action),
+               defs/ (one file per mission)
+  assets/      (filled in later phases)
 ```
 
 ### Conventions
@@ -87,6 +90,18 @@ src/
 - Game code reads **actions** (`input.isDown('jump')`), never raw keys. Bindings live in `src/core/input/bindings.ts`.
 - Any line that may swear is a `{ dirty, clean }` pair, resolved with `pickLine()` / `resolveLine()` from `src/content/lines.ts`.
 - Assets: CC0 only. Log every third-party asset in `ASSETS_CREDITS.md`; missing ones go in `TODO_ASSETS.md`.
+
+## Missions
+
+Walk or drive into an orange light pillar and press **F**. Dialogue: **F**/Space next line, **Enter** skips.
+
+| # | Mission | Start | Notes |
+| --- | --- | --- | --- |
+| 1 | Meter Down | Pandey Niwas | Auto only. Drive the drunk Startup Bro to Club Pivot; the ulti-meter rises with sharp turns, hard braking, speed, potholes and crashes. Meter down = proper fare; tampered = he notices. |
+| 2 | Dabba Dash | Two doors down from Pandey Niwas | 10 tiffins in 4 minutes. Stop at each drop. Dal spills on turns, potholes and crashes; leftover dal = reputation = reward. |
+| 3 | Shaadi Mein Zaroor Aana | Denting-Painting shop | Steal the groom's Thaar (Loud Boy included). The baraat chases you, dancing. Lose them, deliver to Kachra Ghat. Reward: Mummy ki belan. |
+
+Ranks by respect: Pappu → Bhai (100) → Don (300) → MLA (600).
 
 ## Challan (wanted) levels
 

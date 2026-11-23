@@ -24,6 +24,13 @@ export interface PlayerState {
   wanted: number; // 0-5 chappals
   weapons: WeaponId[];
   weapon: WeaponId;
+  respect: number;
+}
+
+export interface ProgressState {
+  completed: string[];
+  unlockedVehicles: string[];
+  stats: Record<string, number>;
 }
 
 export interface DebugState {
@@ -36,9 +43,11 @@ export interface DebugState {
 export interface GameState {
   settings: Settings;
   player: PlayerState;
+  progress: ProgressState;
   debug: DebugState;
   setSettings: (patch: Partial<Settings>) => void;
   setPlayer: (patch: Partial<PlayerState>) => void;
+  setProgress: (patch: Partial<ProgressState>) => void;
   setDebug: (patch: Partial<DebugState>) => void;
 }
 
@@ -58,10 +67,12 @@ export const DEFAULT_SETTINGS: Settings = {
 
 export const store = createStore<GameState>()((set) => ({
   settings: { ...DEFAULT_SETTINGS, ...safeStorage.get<Partial<Settings>>(SETTINGS_KEY, {}) },
-  player: { money: 4200, health: 100, wanted: 0, weapons: ['fists', 'chappal'], weapon: 'fists' },
+  player: { money: 4200, health: 100, wanted: 0, weapons: ['fists', 'chappal'], weapon: 'fists', respect: 0 },
+  progress: { completed: [], unlockedVehicles: ['auto'], stats: {} },
   debug: { visible: false, timeScale: 1, paused: false, physicsWireframe: false },
   setSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
   setPlayer: (patch) => set((s) => ({ player: { ...s.player, ...patch } })),
+  setProgress: (patch) => set((s) => ({ progress: { ...s.progress, ...patch } })),
   setDebug: (patch) => set((s) => ({ debug: { ...s.debug, ...patch } })),
 }));
 

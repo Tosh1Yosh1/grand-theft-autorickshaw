@@ -4,6 +4,10 @@ import { StreetEvents } from './ai/events/StreetEvents';
 import { Pedestrians } from './ai/peds/Pedestrians';
 import { Traffic } from './ai/traffic/Traffic';
 import { Combat } from './combat/Combat';
+import { MissionManager } from './missions/MissionManager';
+import { MeterDown } from './missions/defs/m1MeterDown';
+import { DabbaDash } from './missions/defs/m2DabbaDash';
+import { Shaadi } from './missions/defs/m3Shaadi';
 import { WEBGL_MISSING } from './content/errors';
 import { Engine } from './core/Engine';
 import { PostFX } from './core/PostFX';
@@ -68,6 +72,7 @@ async function boot(): Promise<void> {
   await engine.add(new Wanted());
   await engine.add(new Police());
   await engine.add(new PlayerHealth());
+  await engine.add(new MissionManager([MeterDown, DabbaDash, Shaadi]));
   // Weapon pickups near home to get started.
   combat.addPickup('bat', new THREE.Vector3(SPAWN.x + 8, 0, SPAWN.z + 0.5));
   combat.addPickup('slingshot', new THREE.Vector3(SPAWN.x - 10, 0, SPAWN.z + 0.5));

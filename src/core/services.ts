@@ -5,6 +5,7 @@ import type { StreetEvents } from '../ai/events/StreetEvents';
 import type { Combat } from '../combat/Combat';
 import type { Wanted } from '../wanted/Wanted';
 import type { Police } from '../wanted/Police';
+import type { MissionManager } from '../missions/MissionManager';
 import type { Player } from '../player/Player';
 import type { ThirdPersonCamera } from '../player/ThirdPersonCamera';
 import type { VehicleManager } from '../vehicles/VehicleManager';
@@ -30,4 +31,5 @@ export interface Services {
   combat?: Combat;
   wanted?: Wanted;
   police?: Police;
+  missions?: MissionManager;
 }
