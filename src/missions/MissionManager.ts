@@ -95,7 +95,7 @@ export class MissionManager implements GameSystem {
 
   available(): MissionDef[] {
     const done = new Set(this.ctx.store.getState().progress.completed);
-    return this.defs.filter((d) => !done.has(d.id) && d.requires.every((r) => done.has(r)));
+    return this.defs.filter((d) => (d.repeatable || !done.has(d.id)) && d.requires.every((r) => done.has(r)));
   }
 
   private syncMarkers(): void {
@@ -112,7 +112,8 @@ export class MissionManager implements GameSystem {
     for (const d of this.available()) {
       if (this.markers.has(d.id)) continue;
       const g = new THREE.Group();
-      g.add(beam('#ff9f1c'), labelSprite(d.title, '#ff9f1c'));
+      const color = d.repeatable ? '#4cc9f0' : '#ff9f1c';
+      g.add(beam(color), labelSprite(d.title, color));
       g.position.copy(d.start({ landmarks: lm })).setY(0);
       this.ctx.scene.add(g);
       this.markers.set(d.id, g);
@@ -142,7 +143,8 @@ export class MissionManager implements GameSystem {
     const money = typeof run.def.reward.money === 'function' ? run.def.reward.money(run) : run.def.reward.money;
     const oldRank = rankOf(st.player.respect);
     st.setPlayer({ money: st.player.money + money, respect: st.player.respect + run.def.reward.respect });
-    st.setProgress({ completed: [...st.progress.completed, run.def.id] });
+    if (run.def.repeatable) st.setProgress({ stats: { ...st.progress.stats, [run.def.id]: (st.progress.stats[run.def.id] ?? 0) + 1 } });
+    else st.setProgress({ completed: [...st.progress.completed, run.def.id] });
     if (run.def.reward.weapon) this.ctx.services.combat?.give([run.def.reward.weapon]);
     if (run.def.reward.vehicle) st.setProgress({ unlockedVehicles: [...new Set([...st.progress.unlockedVehicles, run.def.reward.vehicle])] });
     audio.beep(988, 0.15);
@@ -227,6 +229,7 @@ export class MissionManager implements GameSystem {
       return;
     }
     run.updateSeated();
+    if (this.ctx.input.wasPressed('interact')) run.interactLatched = true;
     const step = this.steps[this.stepIndex];
     const target = step?.target?.() ?? null;
     this.targetBeam.visible = !!target;

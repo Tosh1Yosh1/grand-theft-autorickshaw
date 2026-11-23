@@ -21,6 +21,8 @@ export interface MissionDef {
   /** Where the start marker sits. */
   start(run: { landmarks: import('../world/city/districts').Landmarks }): THREE.Vector3;
   requires: string[];
+  /** Side hustles repeat and use cyan markers. */
+  repeatable?: boolean;
   intro: readonly DialogueLine[];
   outro: readonly DialogueLine[];
   steps(run: MissionRun): Step[];

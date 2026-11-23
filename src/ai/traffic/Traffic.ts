@@ -31,7 +31,11 @@ export interface TrafficCar {
   wrecked: boolean;
   rideHeight: number;
   driver: Ped | null;
+  /** Extra riders (the whole family on a bike). */
+  riders: { ped: Ped; seat: [number, number, number] }[];
   paint: string;
+  /** Pulled over for a VIP (red beacon / bullock cart in Jugaadpur). */
+  pulled: number;
 }
 
 /** Traffic mix: [config id, weight]. Autos rule the road. */
@@ -199,7 +203,9 @@ export class Traffic implements GameSystem {
       wrecked: false,
       rideHeight,
       driver: null,
+      riders: [],
       paint,
+      pulled: 0,
     };
     this.planEdge(car, from, to);
     const start = car.waypoints.shift()!;
@@ -208,7 +214,16 @@ export class Traffic implements GameSystem {
     body.setTranslation(car.pos, true);
     this.byCollider.set(collider.handle, car);
     this.cars.push(car);
-    if (OPEN.has(type)) car.driver = this.ctx.services.peds?.spawn(type === 'bike' ? 'deliveryBoy' : 'commuter', car.pos, car.heading, true) ?? null;
+    if (OPEN.has(type)) car.driver = this.ctx.services.peds?.spawn(type === 'bike' ? 'commuter' : 'commuter', car.pos, car.heading, true) ?? null;
+    if (type === 'bike') {
+      // Splendour seats four. Plus the cylinder. Physics is a suggestion.
+      const n = Math.floor(Math.random() * 4);
+      const kinds = ['aunty', 'kid', 'kid'] as const;
+      for (let i = 0; i < n; i++) {
+        const ped = this.ctx.services.peds?.spawn(kinds[i]!, car.pos, car.heading, true);
+        if (ped) car.riders.push({ ped, seat: config.passengerSeats[i]! });
+      }
+    }
     if (car.wrongWay && car.pos.distanceTo(center) < 90) bark('wrongWay', 'driver', car.pos, center);
     return car;
   }
@@ -224,7 +239,27 @@ export class Traffic implements GameSystem {
     this.byCollider.delete(car.collider.handle);
     this.ctx.physics.world.removeRigidBody(car.body);
     if (car.driver) this.ctx.services.peds?.remove(car.driver);
+    for (const r of car.riders) this.ctx.services.peds?.remove(r.ped);
     this.cars.splice(this.cars.indexOf(car), 1);
+  }
+
+  /** Pappu takes this car. Returns its pose/paint so a drivable Vehicle can replace it. */
+  hijack(car: TrafficCar): { id: string; pos: THREE.Vector3; heading: number; paint: string } {
+    const out = { id: car.config.id, pos: car.pos.clone(), heading: car.heading, paint: car.paint };
+    const peds = this.ctx.services.peds;
+    const d = car.driver;
+    car.driver = null;
+    if (d && peds) {
+      peds.release(d);
+      peds.knock(d, new THREE.Vector3(Math.cos(car.heading) * 3, 0, -Math.sin(car.heading) * 3), 2.5, 'hitByCar');
+    } else bark('roadRage', 'driver', car.pos, null, true);
+    for (const r of car.riders) {
+      peds?.release(r.ped);
+      peds?.knock(r.ped, new THREE.Vector3(Math.random() * 2 - 1, 0, Math.random() * 2 - 1), 2, 'downed');
+    }
+    car.riders = [];
+    this.remove(car);
+    return out;
   }
 
   /** Rammed: becomes a physics object that can be shoved around. */
@@ -317,6 +352,23 @@ export class Traffic implements GameSystem {
     const diff = Math.atan2(Math.sin(want - car.heading), Math.cos(want - car.heading));
     car.heading += THREE.MathUtils.clamp(diff, -2.2 * dt, 2.2 * dt);
 
+    // VIP behind us (red beacon, or the bullock cart in Jugaadpur): pull over to the kerb and wait.
+    const vip = this.ctx.services.vehicles?.current;
+    if (vip && (vip.config.id === 'innova' || (vip.config.id === 'cart' && districtAt(vip.position.x, vip.position.z) === 'jugaadpur'))) {
+      const dx = vip.position.x - car.pos.x;
+      const dz = vip.position.z - car.pos.z;
+      const behind = dx * Math.sin(car.heading) + dz * Math.cos(car.heading) < 0;
+      if (behind && dx * dx + dz * dz < 28 * 28) car.pulled = 2.5;
+    }
+    if (car.pulled > 0) {
+      car.pulled -= dt;
+      car.speed = Math.max(0, car.speed - 12 * dt);
+      const shift = Math.min(1, dt * 2);
+      car.pos.x += Math.cos(car.heading) * shift;
+      car.pos.z += -Math.sin(car.heading) * shift;
+      car.body.setNextKinematicTranslation(car.pos);
+      return;
+    }
     // Speed: cruise, slow for turns, brake for obstacles.
     const ob = this.obstacleAhead(car);
     let target_speed = car.cruise * (Math.abs(diff) > 0.4 ? 0.55 : 1);
@@ -367,6 +419,11 @@ export class Traffic implements GameSystem {
       }
       this.m.compose(car.pos, this.q, this.one);
       inst.set(car.slot, this.m);
+      for (const r of car.riders) {
+        r.ped.pos.copy(this.tmp.set(...r.seat).applyQuaternion(this.q).add(car.pos));
+        r.ped.heading = car.heading;
+        r.ped.anim = 'sitting';
+      }
       if (car.driver) {
         const seat = this.tmp.set(...car.config.seat).applyQuaternion(this.q).add(car.pos);
         car.driver.pos.copy(seat);

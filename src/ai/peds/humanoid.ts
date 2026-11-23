@@ -23,7 +23,7 @@ export const HUMANOID_PARTS: PartDef[] = [
   { name: 'bat', geo: BOX, color: 'pack', pivot: [-0.27, 1.45, 0], offset: [0, -0.75, 0.25], scale: [0.08, 0.7, 0.04], joint: 'armR', optional: true },
 ];
 
-export type PedType = 'aunty' | 'uncle' | 'startupBro' | 'gymBhai' | 'deliveryBoy' | 'selfieCouple' | 'commuter' | 'kid' | 'dancer' | 'supporter' | 'cop' | 'squad' | 'anchor';
+export type PedType = 'aunty' | 'uncle' | 'startupBro' | 'gymBhai' | 'deliveryBoy' | 'selfieCouple' | 'commuter' | 'kid' | 'dancer' | 'supporter' | 'cop' | 'squad' | 'anchor' | 'boss' | 'goon' | 'clerk';
 
 export interface PedStyle {
   colors: Record<string, string>;
@@ -63,6 +63,12 @@ export function styleFor(type: PedType): PedStyle {
       return { colors: { ...base, shirt: '#2b2d42', arms: '#2b2d42', pants: '#2b2d42', cap: '#111111', pack: '#111111', dark: '#111111' }, show: new Set(['cap', 'bat', 'glasses']), scale: 1.05, speed: 1.9 };
     case 'anchor':
       return { colors: { ...base, shirt: '#d00000', arms: '#d00000', pants: '#111111', dark: '#111111' }, show: new Set(['phone', 'glasses']), scale: 1, speed: 1.2 };
+    case 'boss':
+      return { colors: { ...base, shirt: '#f8f9fa', arms: '#f8f9fa', pants: '#f8f9fa', dark: '#111111', hair: '#111111' }, show: new Set(['glasses', 'belly']), scale: 1.18, speed: 1.2 };
+    case 'goon':
+      return { colors: { ...base, shirt: '#1b1b1b', pants: '#3d405b', pack: '#5a3d2b', cap: '#c1121f' }, show: new Set(['bat', 'cap']), partScale: { armL: 1.3, armR: 1.3 }, scale: 1.05, speed: 1.5 };
+    case 'clerk':
+      return { colors: { ...base, shirt: '#e9ecef', pants: '#6c757d', hair: '#555555' }, show: new Set(['glasses', 'belly']), scale: 1, speed: 0.8 };
     case 'supporter':
       return { colors: { ...base, shirt: '#ffffff', pants: '#f4f1e8', arms: '#ffffff', pack: '#5a3d2b', saree: r(['#ff6d00', '#2a9d8f', '#3a86ff', '#e63946']) }, show: new Set(['flag', 'flagCloth']), scale: 1, speed: 0.8 };
     default:

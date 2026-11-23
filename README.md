@@ -112,6 +112,20 @@ Walk or drive into an orange light pillar and press **F**. Dialogue: **F**/Space
 | 1 | Meter Down | Pandey Niwas | Auto only. Drive the drunk Startup Bro to Club Pivot; the ulti-meter rises with sharp turns, hard braking, speed, potholes and crashes. Meter down = proper fare; tampered = he notices. |
 | 2 | Dabba Dash | Two doors down from Pandey Niwas | 10 tiffins in 4 minutes. Stop at each drop. Dal spills on turns, potholes and crashes; leftover dal = reputation = reward. |
 | 3 | Shaadi Mein Zaroor Aana | Denting-Painting shop | Steal the groom's Thaar (Loud Boy included). The baraat chases you, dancing. Lose them, deliver to Kachra Ghat. Reward: Mummy ki belan. |
+| 4 | Form No. 47-B | Sarkari Daftar | Five stamps across five districts (ration office, bijli board, police NOC, notary uncle, a peon on lunch) before the office closes. Bribes required. |
+| 5 | Item Number | Pandey Niwas | Red-light/green-light through a film shoot: move on "ACTION!", freeze on "CUT!" or the bouncers come. Rescue Pinky, drive her home with bouncers chasing. |
+| 6 | Kachra Ghat Showdown | Near the Botalwala godown | Don Babloo Botalwala's 3-minute monologue (skip it and he gets angrier, tougher and brings more goons), then goons + thrown bottles. Belan = one-hit KO. |
+
+### Side hustles (cyan pillars, repeatable)
+
+- **Fares** (just drive the auto around): people hail you; stop, F, drive them, collect the meter fare and an absurd star rating. Tampered meter = more money, worse ratings, the odd complaint to the police.
+- **Flyover Race**: three racers up the half-built flyover, off the end, finish on the road below.
+- **Amazin Pandey Delivery**: two hot orders, then back to the hub, against the clock.
+- **Pappu Baba ka Darbar**: run a fake-godman racket with quick key presses; three slip-ups and the crowd turns on you.
+
+### Vehicles
+
+Auto (tippy, meter), Splendour bike (seats four plus a gas cylinder; traffic bikes carry the whole family), Maaruti 8OO, taxi, Innocent-a with red beacon (traffic pulls over for you), Thaar (comes with a Loud Boy who never leaves), tempo, Route 420 bus, police jeep/bike, Cheekh TV van, and a **secret bullock cart** hidden in a Jugaadpur gali (fastest thing in Jugaadpur: everyone pulls over). Walk up to any traffic vehicle and press F to carjack it. Raju Mechanic (phone) delivers vehicles you've unlocked.
 
 Ranks by respect: Pappu → Bhai (100) → Don (300) → MLA (600).
 

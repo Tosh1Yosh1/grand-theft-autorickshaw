@@ -11,6 +11,9 @@ import { updateVehicleHud } from '../ui/vehicleHud';
 import { VEHICLES } from './configs';
 import { FareMeter } from './FareMeter';
 import { Vehicle, type DriveInput } from './Vehicle';
+import type { Ped } from '../ai/peds/Pedestrians';
+import { M3 } from '../content/missions';
+import { districtAt } from '../world/city/layout';
 
 const ENTER_DISTANCE = 2.6;
 const IDLE_INPUT: DriveInput = { throttle: 0, steer: 0, handbrake: true };
@@ -30,6 +33,9 @@ export class VehicleManager implements GameSystem {
   private lastLine = 0;
   private time = 0;
   private readonly tmp = new THREE.Vector3();
+  /** Every Thaar comes with a Loud Boy. He does not leave. */
+  private loudBoys = new Map<Vehicle, Ped>();
+  private loudTimer = 6;
 
   private readonly cameraTarget: CameraTarget = {
     distance: 6,
@@ -59,6 +65,9 @@ export class VehicleManager implements GameSystem {
 
   remove(v: Vehicle): void {
     if (v === this.current) this.exit(true);
+    const lb = this.loudBoys.get(v);
+    if (lb) this.ctx.services.peds?.remove(lb);
+    this.loudBoys.delete(v);
     this.byCollider.delete(v.collider.handle);
     this.vehicles.splice(this.vehicles.indexOf(v), 1);
     v.dispose();
@@ -71,6 +80,8 @@ export class VehicleManager implements GameSystem {
   fixedUpdate(dt: number): void {
     this.time += dt;
     const { input } = this.ctx;
+    const cur = this.current;
+    if (cur?.config.id === 'cart') cur.boost = districtAt(cur.position.x, cur.position.z) === 'jugaadpur' ? 1.9 : 1;
     for (const v of this.vehicles) {
       if (v === this.current) {
         v.fixedUpdate(dt, {
@@ -91,9 +102,10 @@ export class VehicleManager implements GameSystem {
 
   update(dt: number): void {
     const { input, services } = this.ctx;
-    if (this.ctx.clock.scale === 0) return; // cutscene: dialogue owns the keyboard
     const player = services.player;
     for (const v of this.vehicles) v.updateVisuals();
+    this.updateLoudBoys(dt);
+    if (this.ctx.clock.scale === 0) return; // cutscene: dialogue owns the keyboard
     if (!player) return;
 
     if (this.current) {
@@ -142,11 +154,62 @@ export class VehicleManager implements GameSystem {
       if (d < best) { best = d; nearest = v; }
     }
     if (services.wanted?.dealAvailable || services.missions?.markerNearby) return;
-    setPrompt(nearest ? `<kbd>F</kbd> ${nearest.config.hasMeter ? 'Auto chalao' : `Drive ${nearest.config.name}`}` : null);
+    // No parked vehicle? Traffic is fair game.
+    let jack: import('../ai/traffic/Traffic').TrafficCar | null = null;
+    if (!nearest && services.traffic) {
+      let bj = 3.2;
+      for (const c of services.traffic.cars) {
+        const d = c.pos.distanceTo(player.position);
+        if (!c.wrecked && d < bj) { bj = d; jack = c; }
+      }
+    }
+    setPrompt(nearest ? `<kbd>F</kbd> ${nearest.config.hasMeter ? 'Auto chalao' : `Drive ${nearest.config.name}`}` : jack ? `<kbd>F</kbd> ${jack.config.name} chheeno` : null);
     if (nearest && input.wasPressed('interact')) this.enter(nearest);
+    else if (jack && input.wasPressed('interact')) this.carjack(jack);
+  }
+
+  /** Pull the driver out of a traffic vehicle and take it. */
+  carjack(car: import('../ai/traffic/Traffic').TrafficCar): void {
+    const traffic = this.ctx.services.traffic!;
+    const { id, pos, heading, paint } = traffic.hijack(car);
+    const v = this.spawn(id, pos.clone().setY(pos.y + 0.3), heading);
+    if (paint) {
+      v.object.traverse((o) => {
+        const m = (o as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+        if (m?.name === 'paint') {
+          (o as THREE.Mesh).material = m.clone();
+          ((o as THREE.Mesh).material as THREE.MeshStandardMaterial).color.set(paint);
+        }
+      });
+    }
+    this.ctx.events.emit('crime:carHit', { position: pos.clone() });
+    this.enter(v);
+  }
+
+  private updateLoudBoys(dt: number): void {
+    const q = new THREE.Quaternion();
+    for (const [v, ped] of this.loudBoys) {
+      const r = v.body.rotation();
+      q.set(r.x, r.y, r.z, r.w);
+      ped.pos.copy(this.tmp.set(...v.config.passengerSeats[0]!).applyQuaternion(q).add(v.position));
+      ped.heading = v.heading;
+      ped.anim = 'sitting';
+    }
+    const cur = this.current;
+    if (cur && this.loudBoys.has(cur) && !this.ctx.services.missions?.run) {
+      this.loudTimer -= dt;
+      if (this.loudTimer <= 0) {
+        this.loudTimer = 14;
+        this.say(M3.loudBoy);
+      }
+    }
   }
 
   enter(v: Vehicle): void {
+    if (v.config.id === 'thar' && !this.loudBoys.has(v)) {
+      const lb = this.ctx.services.peds?.spawn('gymBhai', v.position.clone(), v.heading, true);
+      if (lb) this.loudBoys.set(v, lb);
+    }
     const { services } = this.ctx;
     if (v.ai) {
       v.ai = null;
@@ -238,6 +301,6 @@ export class VehicleManager implements GameSystem {
     if (!force && this.time - this.lastLine < 2.5) return;
     this.lastLine = this.time;
     if (!this.ctx.store.getState().settings.subtitles) return;
-    showSubtitle(pickLine(pool, this.ctx.store.getState().settings.profanity), 'Pappu');
+    showSubtitle(pickLine(pool, this.ctx.store.getState().settings.profanity), pool === M3.loudBoy ? 'Loud Boy' : 'Pappu');
   }
 }

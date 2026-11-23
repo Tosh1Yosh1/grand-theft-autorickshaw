@@ -15,6 +15,11 @@ import { MissionManager } from './missions/MissionManager';
 import { MeterDown } from './missions/defs/m1MeterDown';
 import { DabbaDash } from './missions/defs/m2DabbaDash';
 import { Shaadi } from './missions/defs/m3Shaadi';
+import { Form47B } from './missions/defs/m4Form47B';
+import { ItemNumber } from './missions/defs/m5ItemNumber';
+import { Showdown } from './missions/defs/m6Showdown';
+import { FlyoverRace, FoodDelivery, Godman } from './missions/defs/hustles';
+import { Fares } from './missions/Fares';
 import { WEBGL_MISSING } from './content/errors';
 import { Engine } from './core/Engine';
 import { PostFX } from './core/PostFX';
@@ -70,6 +75,9 @@ async function boot(): Promise<void> {
   const vehicles = new VehicleManager();
   await engine.add(vehicles);
   vehicles.spawn('auto', new THREE.Vector3(SPAWN.x + 1, 0.8, SPAWN.z - 5), Math.PI / 2);
+  // A bike outside home, and the secret bullock cart deep in a Jugaadpur gali.
+  vehicles.spawn('bike', new THREE.Vector3(SPAWN.x - 6, 0.8, SPAWN.z - 4.5), Math.PI / 2);
+  vehicles.spawn('cart', new THREE.Vector3(-300 + 2 * 60 + 30, 1, -300 + 6 * 60 + 30), 0);
   await engine.add(new Pedestrians());
   await engine.add(new Traffic());
   await engine.add(new Animals());
@@ -79,7 +87,8 @@ async function boot(): Promise<void> {
   await engine.add(new Wanted());
   await engine.add(new Police());
   await engine.add(new PlayerHealth());
-  await engine.add(new MissionManager([MeterDown, DabbaDash, Shaadi]));
+  await engine.add(new MissionManager([MeterDown, DabbaDash, Shaadi, Form47B, ItemNumber, Showdown, FlyoverRace, FoodDelivery, Godman]));
+  await engine.add(new Fares());
   await engine.add(new Radio());
   await engine.add(new Phone());
   await engine.add(new Minimap());

@@ -26,6 +26,8 @@ export class Vehicle {
   playerDriven = false;
   /** AI driver (police, missions). Called every physics step when the player isn't driving. */
   ai: ((dt: number) => DriveInput) | null = null;
+  /** Speed/power multiplier (bullock cart in Jugaadpur, nitro, etc). */
+  boost = 1;
   /** Seconds spent upside down, for auto-righting. */
   private flippedTime = 0;
   private readonly tmpQ = new THREE.Quaternion();
@@ -131,7 +133,7 @@ export class Vehicle {
     let brake = 0;
     if (!dead) {
       if (input.throttle > 0) {
-        engine = speed < -0.5 ? 0 : c.engineForce * input.throttle * (absSpeed < c.maxSpeed ? 1 : 0);
+        engine = speed < -0.5 ? 0 : c.engineForce * this.boost * input.throttle * (absSpeed < c.maxSpeed * this.boost ? 1 : 0);
         if (speed < -0.5) brake = c.brakeForce;
       } else if (input.throttle < 0) {
         if (speed > 0.5) brake = c.brakeForce;

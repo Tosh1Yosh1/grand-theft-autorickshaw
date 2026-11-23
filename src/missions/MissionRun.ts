@@ -19,6 +19,14 @@ export class MissionRun {
   /** Seconds left, shown in the HUD when set. */
   timer: number | null = null;
   extraText = '';
+  /** F pressed since the last physics step (latched so fast frame rates never drop it). */
+  interactLatched = false;
+
+  consumeInteract(): boolean {
+    const v = this.interactLatched;
+    this.interactLatched = false;
+    return v;
+  }
   private peds: Ped[] = [];
   private vehicles: Vehicle[] = [];
   private objects: THREE.Object3D[] = [];

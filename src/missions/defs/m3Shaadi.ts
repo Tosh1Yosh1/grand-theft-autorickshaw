@@ -39,9 +39,7 @@ export const Shaadi: MissionDef = {
           garland.rotation.x = Math.PI / 2;
           garland.position.set(0, 0.55, 1.6);
           thar.object.add(garland);
-          const loud = r.ped('gymBhai', venue.clone());
-          if (loud) r.seat(loud, thar, thar.config.passengerSeats[0]!);
-          r.data.loud = loud;
+          // Loud Boy is installed by VehicleManager the moment anyone gets in. Like a warranty.
         }
         for (let i = 0; i < 12; i++) {
           const d = r.ped('dancer', venue.clone().add(new THREE.Vector3((Math.random() - 0.5) * 10, 0, (Math.random() - 0.5) * 5)), Math.random() * 6);
