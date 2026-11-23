@@ -14,7 +14,7 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className = '', text 
   return e;
 }
 
-export function showLoading(): { hide: () => void } {
+export function showLoading(): { hide: () => void; step: (text: string) => void } {
   const screen = el('div', 'screen');
   screen.append(
     el('div', 'title', 'Grand Theft Auto-Rickshaw'),
@@ -22,10 +22,16 @@ export function showLoading(): { hide: () => void } {
     el('div', 'spinner'),
   );
   const tip = el('div', 'tip', pickLine(LOADING_TIPS, profanity()));
-  screen.append(tip);
+  const stepEl = el('div', 'tip', '');
+  stepEl.style.opacity = '0.6';
+  stepEl.style.fontSize = '14px';
+  screen.append(tip, stepEl);
   root.append(screen);
   const timer = window.setInterval(() => (tip.textContent = pickLine(LOADING_TIPS, profanity())), 3500);
   return {
+    step(text: string) {
+      stepEl.textContent = text;
+    },
     hide() {
       window.clearInterval(timer);
       screen.classList.add('hidden');

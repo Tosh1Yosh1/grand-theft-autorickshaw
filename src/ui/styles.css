@@ -178,3 +178,25 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #1a0f05; fon
 .money-pop.up { color: #7bd389; } .money-pop.down { color: #ff6b6b; }
 @keyframes pop-up { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-30px); opacity: 0; } }
 .hint { transition: opacity 1s; } .hint.fade { opacity: 0; }
+
+.main-menu { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  padding: 24px; text-align: center; background: linear-gradient(180deg, rgba(20,8,0,0.15), rgba(20,8,0,0.7)); z-index: 15; }
+.main-menu.show { display: flex; }
+.mm-title { font-size: clamp(32px, 7vw, 84px); font-weight: 900; font-style: italic; color: var(--saffron); line-height: 1;
+  text-shadow: 4px 4px 0 var(--chilli), 8px 8px 0 #000; }
+.mm-sub { font-size: clamp(18px, 3.5vw, 36px); font-weight: 900; color: #fff; text-shadow: 3px 3px 0 #000; letter-spacing: 3px; text-transform: uppercase; }
+.mm-tag { font-style: italic; font-size: clamp(14px, 2vw, 20px); color: #ffd9a0; text-shadow: 2px 2px 0 #000; margin-bottom: 14px; }
+.mm-buttons { display: flex; flex-direction: column; gap: 10px; width: min(360px, 100%); }
+.main-menu button { font: inherit; font-size: 18px; font-weight: 900; padding: 12px; border-radius: 10px; border: 0; cursor: pointer;
+  background: var(--saffron); color: var(--ink); box-shadow: 0 4px 0 var(--chilli); display: flex; flex-direction: column; align-items: center; }
+.main-menu button.alt { background: rgba(255,255,255,0.9); box-shadow: 0 4px 0 #555; }
+.main-menu button small { font-weight: 400; font-size: 12px; opacity: 0.8; }
+.mm-foot { margin-top: 16px; font-size: 12px; opacity: 0.8; text-shadow: 1px 1px 0 #000; }
+.mm-gate { background: rgba(20,8,0,0.92); border: 3px solid var(--chilli); border-radius: 14px; padding: 20px; max-width: 520px;
+  display: flex; flex-direction: column; gap: 10px; }
+.mm-gate h2 { margin: 0; color: var(--chilli); font-size: 30px; }
+.mm-gate p { margin: 0 0 8px; line-height: 1.5; }
+
+#overlay.in-menu .hud, #overlay.in-menu .minimap, #overlay.in-menu .hint, #overlay.in-menu .radio-ticker { display: none; }
+.actions { display: none; }
+#overlay.debug-on .actions { display: block; }

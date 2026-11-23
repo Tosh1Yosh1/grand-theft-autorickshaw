@@ -22,6 +22,7 @@ export interface GameEvents {
   'wanted:change': { level: number };
   'phone:call': { from: string };
   'mission:passed': { id: string };
+  'game:start': void;
   'mission:failed': { id: string };
 }
 

@@ -5,6 +5,17 @@ export default defineConfig({
   base: './',
   build: {
     target: 'es2022',
-    chunkSizeWarningLimit: 5500, // Rapier ships its wasm inline; it's chunky, like Pappu.
+    // Rapier ships its WASM inline (~2 MB); it gets its own chunk so it loads in parallel.
+    chunkSizeWarningLimit: 4500,
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (id.includes('@dimforge')) return 'rapier';
+          if (id.includes('node_modules/three')) return 'three';
+          if (id.includes('node_modules')) return 'vendor';
+          return undefined;
+        },
+      },
+    },
   },
 });

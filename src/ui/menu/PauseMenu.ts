@@ -44,14 +44,14 @@ export class PauseMenu implements GameSystem {
     document.addEventListener('pointerlockchange', () => {
       const locked = !!document.pointerLockElement;
       // Esc while playing releases the mouse: treat that as "pause".
-      if (this.wasLocked && !locked && !ctx.services.phone?.open && ctx.clock.scale !== 0) this.show(true);
+      if (this.wasLocked && !locked && !ctx.services.phone?.open && ctx.clock.scale !== 0 && ctx.services.camera?.enabled !== false) this.show(true);
       this.wasLocked = locked;
     });
     window.addEventListener('keydown', (e) => {
       if (this.rebinding) {
         e.preventDefault();
         this.bind(this.rebinding, e.code);
-      } else if (e.code === 'Escape' && !document.pointerLockElement) {
+      } else if (e.code === 'Escape' && !document.pointerLockElement && ctx.services.camera?.enabled !== false) {
         if (ctx.services.phone?.open) ctx.services.phone.toggle(false);
         else this.show(!this.open);
       }
@@ -68,6 +68,11 @@ export class PauseMenu implements GameSystem {
     this.ctx.clock.scale = on ? 0 : 1;
     this.el.classList.toggle('show', on);
     if (on) this.render();
+  }
+
+  openTab(tab: 'main' | 'settings' | 'controls'): void {
+    this.tab = tab;
+    this.render();
   }
 
   private bind(action: Action, code: string): void {

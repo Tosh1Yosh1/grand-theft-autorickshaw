@@ -4,7 +4,7 @@ A browser-based, open-world, third-person action-comedy. Pappu "Bhaukaal" Pandey
 with too many EMIs, wants to become the biggest bhai of Mumbhai. 18+ (gaali, cartoon violence,
 behind a profanity toggle). Every asset is original, procedural or CC0.
 
-> Status: see the draft PR for the phase-by-phase log and how to test each phase.
+> Status: all 10 build phases done (engine → controller → auto → city → NPCs → combat/challan → missions → phone/radio/save → missions 4-6/hustles/vehicles → menu/build/deploy). See the draft PR for how to test each phase.
 
 ## Run it
 
@@ -155,6 +155,20 @@ Hitting a cow is an instant 3 chappals and an angry mob.
 | Kachra Ghat | south | Godowns, containers, cranes, the sea |
 
 A half-built flyover runs east-west across the north and stops in mid-air.
+
+## Build & deploy
+
+```bash
+npm run build           # type-check + production build into dist/
+npm run preview         # serve dist/ on http://localhost:4173
+npm run package:itch    # build + gtar-itch.zip for itch.io
+```
+
+**Vercel:** import the GitHub repo in Vercel (framework: Vite, build `npm run build`, output `dist`; `vercel.json` already sets this). Every push to the branch gets a preview URL.
+
+**itch.io:** create a new project → Kind of project: **HTML** → upload `gtar-itch.zip` → tick **This file will be played in the browser** → viewport 1280×720, enable **Fullscreen button** → set the content rating to 18+ (the game has its own 18+ gate too).
+
+The build uses a relative base path, so the same `dist/` works on both. Rapier's physics engine (WASM inlined) is its own ~1.7 MB gzipped chunk that loads in parallel with the game code.
 
 ## Tech
 

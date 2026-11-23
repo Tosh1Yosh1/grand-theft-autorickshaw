@@ -8,7 +8,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "package:itch": "npm run build && node scripts/package-itch.mjs"
   },
   "repository": {
     "type": "git",

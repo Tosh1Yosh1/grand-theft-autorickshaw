@@ -73,6 +73,7 @@ export class DebugGui implements GameSystem {
       const visible = !store.getState().debug.visible;
       store.getState().setDebug({ visible });
       debugGui().show(visible);
+      document.getElementById('overlay')!.classList.toggle('debug-on', visible);
       if (visible) document.exitPointerLock?.();
     }
   }

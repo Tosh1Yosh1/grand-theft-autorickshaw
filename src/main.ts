@@ -5,9 +5,11 @@ import { Pedestrians } from './ai/peds/Pedestrians';
 import { Traffic } from './ai/traffic/Traffic';
 import { Radio } from './audio/Radio';
 import { Combat } from './combat/Combat';
-import { hasSave, loadGame, saveGame } from './core/save';
+import { saveGame } from './core/save';
 import { Minimap } from './ui/Minimap';
 import { PauseMenu } from './ui/menu/PauseMenu';
+import { MainMenu } from './ui/menu/MainMenu';
+import { LOADING_STEPS } from './content/menu';
 import { Phone } from './ui/phone/Phone';
 import { Shops } from './world/Shops';
 import { rankOf } from './missions/MissionManager';
@@ -61,12 +63,19 @@ async function boot(): Promise<void> {
   }
 
   const loading = showLoading();
-  await nextFrame();
+  let stepI = 0;
+  const step = async () => {
+    loading.step(LOADING_STEPS[stepI++ % LOADING_STEPS.length]!);
+    await nextFrame();
+  };
+  await step();
   const engine = await Engine.create(document.getElementById('game')!);
+  await step();
   await engine.add(new DebugGui(engine));
   await engine.add(new Potholes());
   const city = new City();
   await engine.add(city);
+  await step();
   await engine.add(new DayNight(engine));
   await engine.add(new PostFX(engine));
   await engine.add(new ThirdPersonCamera());
@@ -78,10 +87,12 @@ async function boot(): Promise<void> {
   // A bike outside home, and the secret bullock cart deep in a Jugaadpur gali.
   vehicles.spawn('bike', new THREE.Vector3(SPAWN.x - 6, 0.8, SPAWN.z - 4.5), Math.PI / 2);
   vehicles.spawn('cart', new THREE.Vector3(-300 + 2 * 60 + 30, 1, -300 + 6 * 60 + 30), 0);
+  await step();
   await engine.add(new Pedestrians());
   await engine.add(new Traffic());
   await engine.add(new Animals());
   await engine.add(new StreetEvents());
+  await step();
   const combat = new Combat();
   await engine.add(combat);
   await engine.add(new Wanted());
@@ -93,7 +104,8 @@ async function boot(): Promise<void> {
   await engine.add(new Phone());
   await engine.add(new Minimap());
   await engine.add(new Shops());
-  await engine.add(new PauseMenu());
+  const pause = new PauseMenu();
+  await engine.add(pause);
   // Weapon pickups near home to get started.
   combat.addPickup('bat', new THREE.Vector3(SPAWN.x + 8, 0, SPAWN.z + 0.5));
   combat.addPickup('slingshot', new THREE.Vector3(SPAWN.x - 10, 0, SPAWN.z + 0.5));
@@ -120,8 +132,8 @@ async function boot(): Promise<void> {
   // Handy for console poking and automated smoke tests.
   Object.assign(window, { gtar: engine.ctx, gtarEngine: engine });
 
-  // Progress: continue from the last save, autosave after missions and every 2 minutes when calm.
-  if (hasSave()) loadGame(engine.ctx);
+  // Progress: the main menu offers Continue; autosave after missions and every 2 minutes when calm.
+  await engine.add(new MainMenu(pause));
   engine.ctx.events.on('mission:passed', () => saveGame(engine.ctx));
   setInterval(() => {
     if (!services.missions?.run && (services.wanted?.level ?? 0) === 0) saveGame(engine.ctx);
@@ -129,7 +141,7 @@ async function boot(): Promise<void> {
 
   engine.start();
   loading.hide();
-  showHint();
+  engine.ctx.events.on('game:start', () => showHint());
 }
 
 boot().catch((err) => showError(err));

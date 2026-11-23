@@ -1,4 +1,4 @@
-import RAPIER from '@dimforge/rapier3d-compat';
+import type RAPIER from '@dimforge/rapier3d-compat';
 import * as THREE from 'three';
 
 export const FIXED_DT = 1 / 60;
@@ -34,9 +34,12 @@ export class Physics {
     this.forceHandlers.push(handler);
   }
 
+  /** Rapier (with its inlined WASM) is loaded as a separate chunk, in parallel with the rest. */
   static async create(): Promise<Physics> {
-    await RAPIER.init();
-    return new Physics(RAPIER);
+    const mod = await import('@dimforge/rapier3d-compat');
+    const R = (mod.default ?? mod) as typeof RAPIER;
+    await R.init();
+    return new Physics(R);
   }
 
   get bodyCount(): number {
