@@ -2,6 +2,7 @@ import type * as THREE from 'three';
 import type { EventBus } from './EventBus';
 import type { Input } from './input/Input';
 import type { Physics } from './Physics';
+import type { Services } from './services';
 import type { store } from './store';
 
 /** Everything a system may need. Passed once at init. */
@@ -13,6 +14,7 @@ export interface GameContext {
   input: Input;
   events: EventBus;
   store: typeof store;
+  services: Services;
 }
 
 /**
@@ -21,6 +23,8 @@ export interface GameContext {
  */
 export interface GameSystem {
   readonly name: string;
+  /** Lower runs first each frame. Default 0. Cameras use 100 so they see final positions. */
+  readonly priority?: number;
   init?(ctx: GameContext): void | Promise<void>;
   fixedUpdate?(dt: number): void;
   update?(dt: number): void;

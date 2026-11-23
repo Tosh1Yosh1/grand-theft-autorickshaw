@@ -1,7 +1,8 @@
 import { WEBGL_MISSING } from './content/errors';
-import { FlyCamera } from './core/debug/FlyCamera';
 import { Engine } from './core/Engine';
 import type { GameSystem } from './core/System';
+import { Player } from './player/Player';
+import { ThirdPersonCamera } from './player/ThirdPersonCamera';
 import { DebugGui } from './ui/DebugGui';
 import { createActionReadout, showError, showHint, showLoading } from './ui/overlay';
 import { TestLevel } from './world/TestLevel';
@@ -25,9 +26,10 @@ async function boot(): Promise<void> {
 
   const loading = showLoading();
   const engine = await Engine.create(document.getElementById('game')!);
-  await engine.add(new TestLevel());
-  await engine.add(new FlyCamera());
   await engine.add(new DebugGui(engine));
+  await engine.add(new TestLevel());
+  await engine.add(new ThirdPersonCamera());
+  await engine.add(new Player());
 
   const readout = createActionReadout();
   const actionReadout: GameSystem = {

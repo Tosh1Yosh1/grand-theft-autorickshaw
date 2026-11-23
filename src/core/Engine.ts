@@ -53,6 +53,7 @@ export class Engine {
       input: new Input(renderer.domElement),
       events: new EventBus(),
       store,
+      services: {},
     };
 
     applyGraphics(renderer, scene, this.sun, store.getState().settings.graphics);
@@ -75,6 +76,7 @@ export class Engine {
   async add(system: GameSystem): Promise<void> {
     await system.init?.(this.ctx);
     this.systems.push(system);
+    this.systems.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
   }
 
   start(): void {

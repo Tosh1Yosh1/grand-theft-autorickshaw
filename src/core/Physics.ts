@@ -16,6 +16,8 @@ interface Synced {
 export class Physics {
   readonly world: RAPIER.World;
   private synced: Synced[] = [];
+  /** Interpolation factor between the last two steps, updated every frame. */
+  alpha = 1;
   private debugLines: THREE.LineSegments | null = null;
 
   private constructor(readonly rapier: typeof RAPIER) {
@@ -63,6 +65,7 @@ export class Physics {
 
   /** alpha = how far we are between the last two physics steps (0..1). */
   sync(alpha: number): void {
+    this.alpha = alpha;
     for (const s of this.synced) {
       s.object.position.lerpVectors(s.prevPos, s.currPos, alpha);
       s.object.quaternion.slerpQuaternions(s.prevRot, s.currRot, alpha);

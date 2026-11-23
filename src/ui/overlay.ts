@@ -54,9 +54,9 @@ export function showError(err: unknown, message?: string): void {
 export function showHint(): void {
   const hint = el('div', 'hint');
   hint.innerHTML =
-    '<b>Phase 0 test ground</b><br>' +
-    'Click to look around · <kbd>W A S D</kbd> fly · <kbd>E</kbd>/<kbd>Q</kbd> up/down · <kbd>Shift</kbd> fast<br>' +
-    '<kbd>B</kbd> drop 10 parcels · <kbd>R</kbd> reset · <kbd>`</kbd> debug panel · <kbd>Esc</kbd> free mouse';
+    '<b>Phase 1: Pappu on foot</b><br>' +
+    'Click to grab mouse · <kbd>W A S D</kbd> move · <kbd>Shift</kbd> sprint · <kbd>Space</kbd> jump · <kbd>C</kbd> crouch<br>' +
+    '<kbd>B</kbd> drop parcels · <kbd>R</kbd> reset · <kbd>`</kbd> debug (tune Player) · <kbd>Esc</kbd> free mouse';
   root.append(hint);
 }
 

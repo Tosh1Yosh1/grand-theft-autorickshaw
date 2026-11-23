@@ -26,6 +26,7 @@ export class TestLevel implements GameSystem {
   init(ctx: GameContext): void {
     this.ctx = ctx;
     this.buildGround();
+    this.buildPlayground();
     this.spawnBoxes(40);
     ctx.events.on('debug:spawnBoxes', ({ count }) => this.spawnBoxes(count));
     ctx.events.on('debug:resetLevel', () => this.reset());
@@ -59,7 +60,7 @@ export class TestLevel implements GameSystem {
       new THREE.BoxGeometry(6, 0.4, 10),
       new THREE.MeshStandardMaterial({ color: '#8d8d8d', roughness: 0.9 }),
     );
-    ramp.position.set(8, 1.2, 0);
+    ramp.position.set(14, 1.2, -6);
     ramp.rotation.z = 0.3;
     ramp.castShadow = ramp.receiveShadow = true;
     scene.add(ramp);
@@ -69,6 +70,50 @@ export class TestLevel implements GameSystem {
         .setTranslation(ramp.position.x, ramp.position.y, ramp.position.z)
         .setRotation({ x: q.x, y: q.y, z: q.z, w: q.w }),
     );
+  }
+
+  /** Static box helper: visual + collider in one go. */
+  private solid(w: number, h: number, d: number, x: number, y: number, z: number, color: string, rotY = 0): THREE.Mesh {
+    const { scene, physics } = this.ctx;
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ color, roughness: 0.9 }));
+    m.position.set(x, y, z);
+    m.rotation.y = rotY;
+    m.castShadow = m.receiveShadow = true;
+    scene.add(m);
+    const q = m.quaternion;
+    physics.world.createCollider(
+      physics.rapier.ColliderDesc.cuboid(w / 2, h / 2, d / 2).setTranslation(x, y, z).setRotation({ x: q.x, y: q.y, z: q.z, w: q.w }),
+    );
+    return m;
+  }
+
+  /** Stairs, a wall, a ledge and a chai tapri to test the controller against. */
+  private buildPlayground(): void {
+    for (let i = 0; i < 8; i++) this.solid(3, 0.25 * (i + 1), 0.6, -6, 0.125 * (i + 1), 8 - i * 0.6, '#9c8f80');
+    this.solid(3, 2, 3, -6, 1, 2.2, '#9c8f80'); // landing at the top of the stairs
+    this.solid(12, 3, 0.4, 0, 1.5, -14, '#d9c7a1'); // wall
+    this.solid(2, 1.1, 2, 4, 0.55, 8, '#7a6a58'); // jumpable ledge
+    this.solid(2, 1.9, 2, 7, 0.95, 8, '#7a6a58'); // too-high ledge
+    // Chai tapri: counter, roof, and a sign.
+    const tapri = new THREE.Group();
+    this.solid(2.4, 1, 1.2, 10, 0.5, 2, '#2f7d4f');
+    this.solid(3, 0.1, 2, 10, 2.5, 2.2, '#c0392b');
+    for (const [px, pz] of [[-1.3, -0.8], [1.3, -0.8], [-1.3, 0.8], [1.3, 0.8]] as const) {
+      this.solid(0.08, 2.5, 0.08, 10 + px, 1.25, 2.2 + pz, '#5a4632');
+    }
+    const sign = document.createElement('canvas');
+    sign.width = 512; sign.height = 128;
+    const g = sign.getContext('2d')!;
+    g.fillStyle = '#ffd23f'; g.fillRect(0, 0, 512, 128);
+    g.fillStyle = '#7a1f12'; g.font = 'bold 56px "Arial Black", sans-serif'; g.textAlign = 'center';
+    g.fillText('PAPPU CHAI CENTRE', 256, 70);
+    g.font = 'italic 26px Georgia, serif'; g.fillText('Udhaar kal milega', 256, 108);
+    const tex = new THREE.CanvasTexture(sign);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const board = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 0.7), new THREE.MeshBasicMaterial({ map: tex }));
+    board.position.set(10, 2.95, 3.21);
+    tapri.add(board);
+    this.ctx.scene.add(tapri);
   }
 
   spawnBoxes(count: number): void {
@@ -86,7 +131,7 @@ export class TestLevel implements GameSystem {
 
       const body = physics.world.createRigidBody(
         R.RigidBodyDesc.dynamic()
-          .setTranslation((Math.random() - 0.5) * 10, 6 + Math.random() * 14, (Math.random() - 0.5) * 10)
+          .setTranslation(-8 + (Math.random() - 0.5) * 8, 6 + Math.random() * 14, -6 + (Math.random() - 0.5) * 8)
           .setRotation(randomQuat())
           .setAngvel({ x: Math.random() * 2, y: Math.random() * 2, z: Math.random() * 2 }),
       );
