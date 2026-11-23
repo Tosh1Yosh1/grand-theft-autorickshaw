@@ -1,0 +1,41 @@
+{
+  "name": "grand-theft-autorickshaw",
+  "version": "0.0.1",
+  "description": "Grand Theft Auto-Rickshaw: Mumbhai Bhaukaal - an original browser open-world parody game",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tosh1Yosh1/grand-theft-autorickshaw.git"
+  },
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/Tosh1Yosh1/grand-theft-autorickshaw/issues"
+  },
+  "homepage": "https://github.com/Tosh1Yosh1/grand-theft-autorickshaw#readme",
+  "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.21.0",
+    "howler": "^2.2.4",
+    "lil-gui": "^0.21.0",
+    "three": "^0.187.0",
+    "zustand": "^5.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/howler": "^2.2.13",
+    "@types/three": "^0.187.0",
+    "eslint": "^10.15.0",
+    "prettier": "^3.10.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "vite": "^8.3.8"
+  },
+  "private": true,
+  "type": "module"
+}
